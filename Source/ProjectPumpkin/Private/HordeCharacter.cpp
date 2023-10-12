@@ -14,7 +14,7 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	CharacterMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ActualMesh"));
+	CharacterMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	CharacterMesh->SetupAttachment(GetCapsuleComponent());
 
 	MassAgent = CreateDefaultSubobject<UMassAgentComponent>(TEXT("MassAgent"));
