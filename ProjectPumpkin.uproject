@@ -7,6 +7,16 @@
 		{
 			"Name": "ProjectPumpkin",
 			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"MassSpawner",
+				"MassEntity"
+			]
+		},
+		{
+			"Name": "MassHorde",
+			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
 	],
@@ -24,10 +34,6 @@
 		},
 		{
 			"Name": "MassEntity",
-			"Enabled": true
-		},
-		{
-			"Name": "MassCrowd",
 			"Enabled": true
 		},
 		{
