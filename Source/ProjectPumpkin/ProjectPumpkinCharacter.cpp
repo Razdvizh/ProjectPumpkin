@@ -11,11 +11,23 @@
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/SkeletalMesh.h"
+#include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+#include "ProjectPumpkin.h"
+#include "DrawDebugHelpers.h"
+#endif
 
-constexpr double MESH_ROTATION_OFFSET = 180;
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+static TAutoConsoleVariable<bool> CVarDebugMouseHit(
+	TEXT("Pumpkin.DebugMouseHit"),
+	false,
+	TEXT("Enables visualization of the mouse cursor hit location in the world"),
+	ECVF_Default
+);
+#endif
 
-AProjectPumpkinCharacter::AProjectPumpkinCharacter()
+AProjectPumpkinCharacter::AProjectPumpkinCharacter() : LookOffset(0.f, 180.f, 0.f)
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -82,19 +94,15 @@ void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
+	if (Controller)
 	{
-		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.X);
 		AddMovementInput(RightDirection, MovementVector.Y);
 	}
@@ -103,19 +111,38 @@ void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)
 void AProjectPumpkinCharacter::Look()
 {
 	UCharacterMovementComponent* CharacterMovementComp = GetCharacterMovement();
+	const bool bIsMoving = CharacterMovementComp->Velocity.Length() > UE_KINDA_SMALL_NUMBER;
 
-	if (Controller != nullptr && CharacterMovementComp->Velocity.Length() <= UE_KINDA_SMALL_NUMBER)
+	if (Controller && !bIsMoving)
 	{
 		FHitResult Hit;
-		if (StaticCast<APlayerController*, AController*>(Controller)->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, false, Hit))
+		APlayerController* PlayerController = StaticCast<APlayerController*, AController*>(Controller);
+		if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, Hit))
 		{
-			const FQuat TargetRotation = ((CharacterMovementComp->GetLastUpdateLocation()) - Hit.ImpactPoint).ToOrientationQuat();
+			const FVector MousePosition = FVector(Hit.ImpactPoint.X, Hit.ImpactPoint.Y, 0.f);
+			#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+			if (CVarDebugMouseHit.GetValueOnGameThread())
+			{
+				DrawCursorHitLocation(MousePosition);
+			}
+			#endif
+			const FQuat TargetRotation = ((CharacterMovementComp->GetLastUpdateLocation()) - MousePosition).ToOrientationQuat();
 			const FQuat DeltaRotation = CharacterMovementComp->GetDeltaRotation(GetWorld()->DeltaTimeSeconds).Quaternion();
-			const FQuat NewRotation = (TargetRotation * DeltaRotation);
+			const FQuat NewRotation = TargetRotation * DeltaRotation;
+
 			CharacterMovementComp->MoveUpdatedComponent(FVector::ZeroVector, NewRotation, false);
-			FRotator ActorRotation = GetActorRotation();
-			FRotator NewActorRotation = FRotator(ActorRotation.Pitch, ActorRotation.Yaw + MESH_ROTATION_OFFSET, ActorRotation.Roll);
+
+			const FRotator NewActorRotation = GetActorRotation() + LookOffset;
 			SetActorRotation(NewActorRotation);
 		}
 	}
 }
+
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+void AProjectPumpkinCharacter::DrawCursorHitLocation(const FVector& HitLocation)
+{
+	FString DebugMessage = FString::Printf(TEXT("HitLocation: %s"), *HitLocation.ToString());
+	GEngine->AddOnScreenDebugMessage(-1, /*TimeToDisplay=*/2.f, FColor::Cyan, DebugMessage);
+	DrawDebugPoint(GetWorld(), HitLocation, /*Size=*/3.f, FColor::Red, false, /*LifeTime=*/2.f);
+}
+#endif
