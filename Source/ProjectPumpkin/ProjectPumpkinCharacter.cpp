@@ -11,6 +11,7 @@
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/SkeletalMesh.h"
+#include "Engine/HitResult.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
