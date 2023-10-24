@@ -58,12 +58,8 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter() : LookOffset(0.f, 180.f, 0.
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	PrimaryActorTick.bCanEverTick = false;
-	PrimaryActorTick.bStartWithTickEnabled = false;
-}
-
-void AProjectPumpkinCharacter::Tick(float DeltaSeconds)
-{
-    Super::Tick(DeltaSeconds);
+	CameraBoom->PrimaryComponentTick.bCanEverTick = false;
+	TopDownCameraComponent->PrimaryComponentTick.bCanEverTick = false;
 }
 
 void AProjectPumpkinCharacter::BeginPlay()
@@ -118,7 +114,7 @@ void AProjectPumpkinCharacter::Look()
 	{
 		FHitResult Hit;
 		APlayerController* PlayerController = StaticCast<APlayerController*, AController*>(Controller);
-		if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, Hit))
+		if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Floor, false, Hit))
 		{
 			const FVector MousePosition = FVector(Hit.ImpactPoint.X, Hit.ImpactPoint.Y, 0.f);
 			#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)

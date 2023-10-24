@@ -8,6 +8,10 @@
 
 class UStaticMeshComponent;
 class UMassAgentComponent;
+class UHealthComponent;
+class AController;
+class AActor;
+struct FDamageEvent;
 
 UCLASS()
 class PROJECTPUMPKIN_API AHordeCharacter : public ACharacter
@@ -18,15 +22,22 @@ public:
 	// Sets default values for this character's properties
 	AHordeCharacter(const FObjectInitializer& ObjectInitializer);
 
-	virtual void Tick(float DeltaSeconds) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UFUNCTION()
+	void DestroySelf();
 
+	UFUNCTION(BlueprintCallable, Category = "Horde|Character", meta = (DevelopmentOnly))
+	void HittedPlayer();
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")
 	UStaticMeshComponent* CharacterMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")
 	UMassAgentComponent* MassAgent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")
+	UHealthComponent* Health;
 };

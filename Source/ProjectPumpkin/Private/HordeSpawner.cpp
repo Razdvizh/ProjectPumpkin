@@ -21,6 +21,7 @@ AHordeSpawner::AHordeSpawner() : SpawnDelay(0.f)
 	ActivationVolume->OnComponentEndOverlap.AddDynamic(this, &AHordeSpawner::OnSpawnerDeactivate);
 
 	PrimaryActorTick.bCanEverTick = false;
+	ActivationVolume->PrimaryComponentTick.bCanEverTick = false;
 	bAutoSpawnOnBeginPlay = false;
 }
 
