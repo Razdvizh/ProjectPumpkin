@@ -51,6 +51,7 @@ void UChasePlayerProcessor::Execute(FMassEntityManager& EntityManager, FMassExec
 				MoveTarget.DistanceToGoal = (MoveTarget.Center - Transform.GetLocation()).Size();
 				MoveTarget.Forward = (MoveTarget.Center - Transform.GetLocation()).GetSafeNormal();
 				MoveTarget.DesiredSpeed = FMassInt16Real(MovementParams.DefaultDesiredSpeed);
+				MoveTarget.IntentAtGoal = EMassMovementAction::Stand;
 			}
 		}
 	});

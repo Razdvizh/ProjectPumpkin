@@ -4,6 +4,7 @@
 #include "HordeSpawner.h"
 #include "Components/BoxComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "TimerManager.h"
 #include "GameFramework/Actor.h"
 #include "Engine/HitResult.h"
 
@@ -29,7 +30,6 @@ void AHordeSpawner::OnSpawnerActivate(UPrimitiveComponent* OverlappedComponent, 
 {
 	if (OtherActor->IsA<TSubclassOf<AActor>>(ActivatorClass))
 	{
-		/// \todo: Change this to SpawnGeneratedEntities as there is no need to query new spawn points?
 		GetWorld()->GetTimerManager().SetTimer(SpawnIntervalHandle, this, &AMassSpawner::DoSpawning, SpawnDelay, true);
 	}
 }

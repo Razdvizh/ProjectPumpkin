@@ -13,5 +13,6 @@ public class ProjectPumpkinTarget : TargetRules
 		ExtraModuleNames.Add("ProjectPumpkin");
 
 		GlobalDefinitions.Add("ECC_Floor=ECC_GameTraceChannel1");
+		GlobalDefinitions.Add("ECC_Projectile=ECC_GameTraceChannel2");
 	}
 }

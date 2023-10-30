@@ -1,23 +1,34 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+#pragma region Gameplay
 #include "ProjectPumpkinCharacter.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "MassAgentComponent.h"
+#include "HealthComponent.h"
+#include "DamageInfo.h"
+#pragma endregion Gameplay
+#pragma region Input
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
+#pragma endregion Input
+#pragma region Engine
 #include "Engine/SkeletalMesh.h"
 #include "Engine/HitResult.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
-#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+#include "Engine/DamageEvents.h"
+#pragma endregion Engine
+#pragma region Misc
 #include "ProjectPumpkin.h"
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 #include "DrawDebugHelpers.h"
 #endif
+#pragma endregion Misc
 
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 static TAutoConsoleVariable<bool> CVarDebugMouseHit(
@@ -28,7 +39,9 @@ static TAutoConsoleVariable<bool> CVarDebugMouseHit(
 );
 #endif
 
-AProjectPumpkinCharacter::AProjectPumpkinCharacter() : LookOffset(0.f, 180.f, 0.f)
+AProjectPumpkinCharacter::AProjectPumpkinCharacter() 
+	: LookOffset(0.f, 180.f, 0.f),
+	  DamageInfo(FDamageEvent(), 0.f)
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -57,9 +70,29 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter() : LookOffset(0.f, 180.f, 0.
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
+	Health->SetMaxHealth(4.f);
+	Health->SetLethalHealth(0.f);
+
+	MassAgent = CreateDefaultSubobject<UMassAgentComponent>(TEXT("MassAgent"));
+
 	PrimaryActorTick.bCanEverTick = false;
 	CameraBoom->PrimaryComponentTick.bCanEverTick = false;
 	TopDownCameraComponent->PrimaryComponentTick.bCanEverTick = false;
+	Health->PrimaryComponentTick.bCanEverTick = false;
+	MassAgent->PrimaryComponentTick.bCanEverTick = false;
+}
+
+float AProjectPumpkinCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const EHealthAssignmentResult Result = Health->Damage(DamageAmount);
+
+	if (Result == EHealthAssignmentResult::Ok)
+	{
+		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	}
+
+	return 0.f;
 }
 
 void AProjectPumpkinCharacter::BeginPlay()

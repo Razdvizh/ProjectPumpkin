@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerController.h"
 #include "ProjectPumpkinPlayerController.generated.h"
 
+/*
+* Strongly typed player controller for project-wide gamemode
+*/
 UCLASS()
 class AProjectPumpkinPlayerController : public APlayerController
 {
