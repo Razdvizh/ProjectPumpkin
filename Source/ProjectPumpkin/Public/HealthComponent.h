@@ -49,19 +49,19 @@ public:
 	EHealthAssignmentResult SetLethalHealth(float NewLethalHealth);
 
 #pragma region Getters
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Health Component")
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Health Component")
 	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Health Component")
 	FORCEINLINE float GetLethalHealth() const { return LethalHealth; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Health Component")
 	FORCEINLINE float GetDamageDelay() const { return DamageDelay; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Health Component")
 	FORCEINLINE bool IsBurstProtected() const { return bBurstProtection; }
 #pragma endregion Getters
 

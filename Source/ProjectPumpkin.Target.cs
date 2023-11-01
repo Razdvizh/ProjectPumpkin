@@ -11,8 +11,5 @@ public class ProjectPumpkinTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
 		ExtraModuleNames.Add("ProjectPumpkin");
-
-		GlobalDefinitions.Add("ECC_Floor=ECC_GameTraceChannel1");
-		GlobalDefinitions.Add("ECC_Projectile=ECC_GameTraceChannel2");
 	}
 }
