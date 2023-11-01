@@ -10,7 +10,7 @@ public class MassHorde : ModuleRules
 
         PublicDependencyModuleNames.AddRange(new string[] {
             "Core", "CoreUObject", "Engine", "MassCommon", "MassEntity", 
-            "MassMovement", "MassNavigation", "MassSpawner", "StructUtils"
+            "MassMovement", "MassNavigation", "MassActors", "MassSpawner", "StructUtils"
         });
     }
 }

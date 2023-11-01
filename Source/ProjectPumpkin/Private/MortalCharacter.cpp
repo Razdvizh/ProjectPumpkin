@@ -2,12 +2,16 @@
 
 #include "MortalCharacter.h"
 #include "HealthComponent.h"
+#include "DamageInfo.h"
 #include "Engine/DamageEvents.h"
 
 // Sets default values
-AMortalCharacter::AMortalCharacter(const FObjectInitializer& ObjectInitialier) : Super(ObjectInitialier)
+AMortalCharacter::AMortalCharacter(const FObjectInitializer& ObjectInitialier) 
+	: Super(ObjectInitialier),
+	DamageInfo(FDamageEvent(), 1.f)
 {
 	Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
+	Health->OnLethalHealthReached.AddDynamic(this, &AMortalCharacter::OnDemise);
 	
 	PrimaryActorTick.bCanEverTick = false;
 	Health->PrimaryComponentTick.bCanEverTick = false;

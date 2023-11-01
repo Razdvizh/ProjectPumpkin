@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "MortalCharacter.h"
-#include "DamageInfo.h"
 #include "ProjectPumpkinCharacter.generated.h"
 
 class UInputMappingContext;
@@ -31,6 +30,8 @@ protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void OnDemise() override;
+
 	void Move(const FInputActionValue& Value);
 
 	void Look();
@@ -54,9 +55,6 @@ protected:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	class USpringArmComponent* CameraBoom;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
-	FDamageInfo DamageInfo;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))

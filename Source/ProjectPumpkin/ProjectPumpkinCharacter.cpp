@@ -10,6 +10,7 @@
 #include "MassAgentComponent.h"
 #include "HealthComponent.h"
 #include "DamageInfo.h"
+#include "MassHordeHelpers.h"
 #pragma endregion Gameplay
 #pragma region Input
 #include "EnhancedInputComponent.h"
@@ -41,8 +42,7 @@ static TAutoConsoleVariable<bool> CVarDebugMouseHit(
 
 AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer),
-	  LookOffset(0.f, 180.f, 0.f),
-	  DamageInfo(FDamageEvent(), 0.f)
+	  LookOffset(0.f, 180.f, 0.f)
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -109,6 +109,11 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 	}
 }
 
+void AProjectPumpkinCharacter::OnDemise()
+{
+	UMassHordeHelpers::DestroyMassAgent(MassAgent);
+}
+
 void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -127,7 +132,7 @@ void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)
 void AProjectPumpkinCharacter::Look()
 {
 	UCharacterMovementComponent* CharacterMovementComp = GetCharacterMovement();
-	const bool bIsMoving = CharacterMovementComp->Velocity.Length() > UE_KINDA_SMALL_NUMBER;
+	const bool bIsMoving = CharacterMovementComp->Velocity.Length() > KINDA_SMALL_NUMBER;
 
 	if (Controller && !bIsMoving)
 	{

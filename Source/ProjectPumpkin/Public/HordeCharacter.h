@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "MortalCharacter.h"
-#include "DamageInfo.h"
 #include "HordeCharacter.generated.h"
 
 class UStaticMeshComponent;
@@ -24,8 +23,7 @@ public:
 	AHordeCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
-	UFUNCTION()
-	void DestroySelf();
+	virtual void OnDemise() override;
 
 	UFUNCTION()
 	void OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
@@ -46,6 +44,4 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")
 	UMassAgentComponent* MassAgent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")
-	FDamageInfo DamageInfo;
 };

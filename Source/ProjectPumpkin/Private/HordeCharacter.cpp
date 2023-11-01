@@ -10,6 +10,7 @@
 #include "ProjectPumpkin/ProjectPumpkinCharacter.h"
 #include "MassAgentComponent.h"
 #include "HealthComponent.h"
+#include "MassHordeHelpers.h"
 #pragma endregion Gameplay
 #pragma region Engine
 #include "Engine/DamageEvents.h"
@@ -26,8 +27,7 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.DoNotCreateDefaultSubobject(ACharacter::MeshComponentName)),
 	PushbackDisplacement(-250.f),
 	LaunchBoost(1.f),
-	Arc(0.25f),
-	DamageInfo(FDamageEvent(), 1.f)
+	Arc(0.25f)
 {
 	CharacterMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	CharacterMesh->SetupAttachment(GetCapsuleComponent());
@@ -36,7 +36,6 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 
 	Health->SetMaxHealth(4.f);
 	Health->SetLethalHealth(0.f);
-	Health->OnLethalHealthReached.AddDynamic(this, &AHordeCharacter::DestroySelf);
 
 	AActor::OnActorHit.AddDynamic(this, &AHordeCharacter::OnActorHit);
 
@@ -45,12 +44,9 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 	MassAgent->PrimaryComponentTick.bCanEverTick = false;
 }
 
-void AHordeCharacter::DestroySelf()
+void AHordeCharacter::OnDemise()
 {
-	if (!UE::Mass::Utils::GetEntityManager(GetWorld())->IsProcessing())
-	{
-		MassAgent->KillEntity(true);
-	}
+	UMassHordeHelpers::DestroyMassAgent(MassAgent);
 }
 
 void AHordeCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)

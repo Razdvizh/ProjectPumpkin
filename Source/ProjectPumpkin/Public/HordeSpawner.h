@@ -37,7 +37,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mass|Spawn", meta = (ToolTip = "Collision that will activate the spawner while instance of ActivatorClass stays in the collision."))
 	UBoxComponent* ActivationVolume;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mass|Spawn", meta = (Units = "s", ClampMin = 0.f, UIMin = 0.f, ToolTip = "Delay between spawn intervals of the entities."))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mass|Spawn", meta = (Units = "s", ClampMin = 0.1f, UIMin = 0.1f, ToolTip = "Delay between spawn intervals of the entities."))
 	float SpawnDelay;
 
 private:

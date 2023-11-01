@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "DamageInfo.h"
 #include "MortalCharacter.generated.h"
 
 class UHealthComponent;
@@ -21,7 +22,14 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
+	UFUNCTION()
+	virtual void OnDemise() PURE_VIRTUAL(&AMortalCharacter::OnDemise, );
+
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	UHealthComponent* Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	FDamageInfo DamageInfo;
 
 };
