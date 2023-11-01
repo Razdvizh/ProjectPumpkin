@@ -16,7 +16,7 @@ class PROJECTPUMPKIN_API AMortalCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	AMortalCharacter();
+	AMortalCharacter(const FObjectInitializer& ObjectInitialier);
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 

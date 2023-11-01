@@ -34,7 +34,6 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 
 	MassAgent = CreateDefaultSubobject<UMassAgentComponent>(TEXT("MassAgent"));
 
-	Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 	Health->SetMaxHealth(4.f);
 	Health->SetLethalHealth(0.f);
 	Health->OnLethalHealthReached.AddDynamic(this, &AHordeCharacter::DestroySelf);
@@ -44,19 +43,6 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 	PrimaryActorTick.bCanEverTick = false;
 	CharacterMesh->PrimaryComponentTick.bCanEverTick = false;
 	MassAgent->PrimaryComponentTick.bCanEverTick = false;
-	Health->PrimaryComponentTick.bCanEverTick = false;
-}
-
-float AHordeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	const EHealthAssignmentResult Result = Health->Damage(DamageAmount);
-
-	if (Result == EHealthAssignmentResult::Ok)
-	{
-		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	}
-
-	return 0.f;
 }
 
 void AHordeCharacter::DestroySelf()

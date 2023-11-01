@@ -5,11 +5,10 @@
 #include "Engine/DamageEvents.h"
 
 // Sets default values
-AMortalCharacter::AMortalCharacter()
+AMortalCharacter::AMortalCharacter(const FObjectInitializer& ObjectInitialier) : Super(ObjectInitialier)
 {
 	Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
-
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	
 	PrimaryActorTick.bCanEverTick = false;
 	Health->PrimaryComponentTick.bCanEverTick = false;
 }

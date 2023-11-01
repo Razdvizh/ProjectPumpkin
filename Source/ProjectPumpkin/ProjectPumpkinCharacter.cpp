@@ -39,8 +39,9 @@ static TAutoConsoleVariable<bool> CVarDebugMouseHit(
 );
 #endif
 
-AProjectPumpkinCharacter::AProjectPumpkinCharacter() 
-	: LookOffset(0.f, 180.f, 0.f),
+AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer),
+	  LookOffset(0.f, 180.f, 0.f),
 	  DamageInfo(FDamageEvent(), 0.f)
 {
 	// Set size for player capsule
@@ -70,7 +71,6 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter()
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 	Health->SetMaxHealth(4.f);
 	Health->SetLethalHealth(0.f);
 
@@ -79,20 +79,7 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 	CameraBoom->PrimaryComponentTick.bCanEverTick = false;
 	TopDownCameraComponent->PrimaryComponentTick.bCanEverTick = false;
-	Health->PrimaryComponentTick.bCanEverTick = false;
 	MassAgent->PrimaryComponentTick.bCanEverTick = false;
-}
-
-float AProjectPumpkinCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	const EHealthAssignmentResult Result = Health->Damage(DamageAmount);
-
-	if (Result == EHealthAssignmentResult::Ok)
-	{
-		return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	}
-
-	return 0.f;
 }
 
 void AProjectPumpkinCharacter::BeginPlay()

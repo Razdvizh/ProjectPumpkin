@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "MortalCharacter.h"
 #include "DamageInfo.h"
 #include "ProjectPumpkinCharacter.generated.h"
 
@@ -14,19 +14,17 @@ class UMassAgentComponent;
 struct FInputActionValue;
 
 UCLASS(Blueprintable)
-class AProjectPumpkinCharacter : public ACharacter
+class AProjectPumpkinCharacter : public AMortalCharacter
 {
 	GENERATED_BODY()
 
 public:
-	AProjectPumpkinCharacter();
+	AProjectPumpkinCharacter(const FObjectInitializer& ObjectInitializer);
 
 	/** Returns TopDownCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -49,9 +47,6 @@ protected:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* TopDownCameraComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
-	UHealthComponent* Health;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mass")
 	UMassAgentComponent* MassAgent;

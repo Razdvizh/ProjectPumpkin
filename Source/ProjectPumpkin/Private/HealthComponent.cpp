@@ -118,7 +118,7 @@ EHealthAssignmentResult UHealthComponent::DiagnosticCheck(float Health) const
 	{
 		return EHealthAssignmentResult::NaN;
 	}
-	else if (FMath::IsNegative(Health))
+	else if (FMath::IsNegativeOrNegativeZero(Health))
 	{
 		return EHealthAssignmentResult::Negative;
 	}

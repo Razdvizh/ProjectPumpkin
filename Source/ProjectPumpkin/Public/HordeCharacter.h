@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "MortalCharacter.h"
 #include "DamageInfo.h"
 #include "HordeCharacter.generated.h"
 
@@ -15,15 +15,13 @@ class AActor;
 struct FDamageEvent;
 
 UCLASS()
-class PROJECTPUMPKIN_API AHordeCharacter : public ACharacter
+class PROJECTPUMPKIN_API AHordeCharacter : public AMortalCharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	AHordeCharacter(const FObjectInitializer& ObjectInitializer);
-
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	UFUNCTION()
@@ -47,9 +45,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")
 	UMassAgentComponent* MassAgent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")
-	UHealthComponent* Health;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")
 	FDamageInfo DamageInfo;
