@@ -52,7 +52,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Spawner", meta = (DisplayName = "Activator", ToolTip = "Class that will trigger the spawn when it overlaps with ActivationVolume."))
 	TSubclassOf<AActor> ActivatorClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Spawner", meta = (ToolTip = "Collision that will activate the spawner while instance of ActivatorClass stays in the collision."))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Spawner", meta = (ToolTip = "Collision that will activate the spawner while instance of Activator stays in the collision."))
 	UBoxComponent* ActivationVolume;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetSpawnDelay, Category = "Horde|Spawner", meta = (Units = "s", ClampMin = 0.1f, UIMin = 0.1f, ToolTip = "Delay between spawn intervals of the entities."))
