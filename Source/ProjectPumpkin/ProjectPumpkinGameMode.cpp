@@ -6,8 +6,9 @@
 #include "ProjectPumpkinGameState.h"
 #include "ProjectPumpkinPlayerState.h"
 #include "ProjectPumpkinHUD.h"
-#include "GameFramework/WorldSettings.h"
 #include "Templates/SubclassOf.h"
+#include "GameFramework/WorldSettings.h"
+#include "GameFramework/PlayerController.h"
 #include "GameFramework/GameNetworkManager.h"
 
 AProjectPumpkinGameMode::AProjectPumpkinGameMode()
@@ -24,4 +25,11 @@ void AProjectPumpkinGameMode::PreInitializeComponents()
 	GetWorldSettings()->GameNetworkManagerClass = nullptr;
 
 	Super::PreInitializeComponents();
+}
+
+APlayerController* AProjectPumpkinGameMode::SpawnPlayerControllerCommon(ENetRole InRemoteRole, FVector const& SpawnLocation, FRotator const& SpawnRotation, TSubclassOf<APlayerController> InPlayerControllerClass)
+{
+	APlayerController* PlayerController = AGameModeBase::SpawnPlayerControllerCommon(InRemoteRole, SpawnLocation, SpawnRotation, InPlayerControllerClass);
+
+	return PlayerController;
 }

@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Templates/SubclassOf.h"
 #include "ProjectPumpkinGameMode.generated.h"
+
+class APlayerController;
 
 /*
 * Project-wide gamemode with type safe access to its classes.
@@ -18,4 +21,8 @@ public:
 	AProjectPumpkinGameMode();
 
 	virtual void PreInitializeComponents() override;
+
+protected:
+	virtual APlayerController* SpawnPlayerControllerCommon(ENetRole InRemoteRole, FVector const& SpawnLocation, FRotator const& SpawnRotation, TSubclassOf<APlayerController> InPlayerControllerClass) override;
+
 };
