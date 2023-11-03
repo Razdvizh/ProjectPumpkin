@@ -25,6 +25,8 @@ public:
 protected:
 	virtual void OnDemise() override;
 
+	virtual void BeginPlay() override;
+
 	UFUNCTION()
 	void OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 

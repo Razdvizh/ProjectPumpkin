@@ -37,8 +37,6 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 	Health->SetMaxHealth(4.f);
 	Health->SetLethalHealth(0.f);
 
-	AActor::OnActorHit.AddDynamic(this, &AHordeCharacter::OnActorHit);
-
 	PrimaryActorTick.bCanEverTick = false;
 	CharacterMesh->PrimaryComponentTick.bCanEverTick = false;
 	MassAgent->PrimaryComponentTick.bCanEverTick = false;
@@ -47,6 +45,13 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 void AHordeCharacter::OnDemise()
 {
 	UMassHordeHelpers::DestroyMassAgent(MassAgent);
+}
+
+void AHordeCharacter::BeginPlay()
+{
+	AActor::OnActorHit.AddUniqueDynamic(this, &AHordeCharacter::OnActorHit);
+
+	Super::BeginPlay();
 }
 
 void AHordeCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)

@@ -11,7 +11,6 @@ AMortalCharacter::AMortalCharacter(const FObjectInitializer& ObjectInitialier)
 	DamageInfo(FDamageEvent(), 1.f)
 {
 	Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
-	Health->OnLethalHealthReached.AddDynamic(this, &AMortalCharacter::OnDemise);
 	
 	PrimaryActorTick.bCanEverTick = false;
 	Health->PrimaryComponentTick.bCanEverTick = false;
@@ -27,4 +26,11 @@ float AMortalCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	}
 
 	return 0.f;
+}
+
+void AMortalCharacter::BeginPlay()
+{
+	Health->OnLethalHealthReached.AddUniqueDynamic(this, &AMortalCharacter::OnDemise);
+
+	Super::BeginPlay();
 }

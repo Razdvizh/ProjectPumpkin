@@ -20,9 +20,6 @@ AHordeSpawner::AHordeSpawner() : SpawnDelay(2.f)
 	ActivationVolume->SetCollisionProfileName(TEXT("Trigger"));
 	ActivationVolume->SetCollisionResponseToChannel(ECollisionChannel::ECC_Projectile, ECollisionResponse::ECR_Overlap);
 
-	ActivationVolume->OnComponentBeginOverlap.AddDynamic(this, &AHordeSpawner::OnSpawnerActivate);
-	ActivationVolume->OnComponentEndOverlap.AddDynamic(this, &AHordeSpawner::OnSpawnerDeactivate);
-
 	PrimaryActorTick.bCanEverTick = false;
 	ActivationVolume->PrimaryComponentTick.bCanEverTick = false;
 	bAutoSpawnOnBeginPlay = false;
@@ -42,6 +39,14 @@ void AHordeSpawner::SetSpawnDelay(float Delay)
 {
 	checkf(FMath::IsNearlyZero(Delay), TEXT("Delay value: %d will cause unexpected spawner behavior! Expected delay that is greater than 0.1f"), Delay);
 	SpawnDelay = Delay;
+}
+
+void AHordeSpawner::BeginPlay()
+{
+	ActivationVolume->OnComponentBeginOverlap.AddUniqueDynamic(this, &AHordeSpawner::OnSpawnerActivate);
+	ActivationVolume->OnComponentEndOverlap.AddUniqueDynamic(this, &AHordeSpawner::OnSpawnerDeactivate);
+
+	Super::BeginPlay();
 }
 
 void AHordeSpawner::OnSpawnerActivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
