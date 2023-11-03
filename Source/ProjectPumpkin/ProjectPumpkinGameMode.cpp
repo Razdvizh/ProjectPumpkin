@@ -3,24 +3,33 @@
 #include "ProjectPumpkinGameMode.h"
 #include "ProjectPumpkinPlayerController.h"
 #include "ProjectPumpkinCharacter.h"
-#include "UObject/ConstructorHelpers.h"
+#include "ProjectPumpkinGameState.h"
+#include "ProjectPumpkinPlayerState.h"
+#include "ProjectPumpkinHUD.h"
+#include "Templates/SubclassOf.h"
+#include "GameFramework/WorldSettings.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/GameNetworkManager.h"
 
 AProjectPumpkinGameMode::AProjectPumpkinGameMode()
 {
-	// use our custom PlayerController class
 	PlayerControllerClass = AProjectPumpkinPlayerController::StaticClass();
+	DefaultPawnClass = AProjectPumpkinCharacter::StaticClass();
+	HUDClass = AProjectPumpkinPlayerController::StaticClass();
+	GameStateClass = AProjectPumpkinGameState::StaticClass();
+	PlayerStateClass = AProjectPumpkinPlayerState::StaticClass();
+}
 
-	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDown/Blueprints/BP_TopDownCharacter"));
-	if (PlayerPawnBPClass.Class != nullptr)
-	{
-		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
+void AProjectPumpkinGameMode::PreInitializeComponents()
+{
+	GetWorldSettings()->GameNetworkManagerClass = nullptr;
 
-	// set default controller to our Blueprinted controller
-	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/TopDown/Blueprints/BP_TopDownPlayerController"));
-	if(PlayerControllerBPClass.Class != NULL)
-	{
-		PlayerControllerClass = PlayerControllerBPClass.Class;
-	}
+	Super::PreInitializeComponents();
+}
+
+APlayerController* AProjectPumpkinGameMode::SpawnPlayerControllerCommon(ENetRole InRemoteRole, FVector const& SpawnLocation, FRotator const& SpawnRotation, TSubclassOf<APlayerController> InPlayerControllerClass)
+{
+	APlayerController* PlayerController = AGameModeBase::SpawnPlayerControllerCommon(InRemoteRole, SpawnLocation, SpawnRotation, InPlayerControllerClass);
+
+	return PlayerController;
 }

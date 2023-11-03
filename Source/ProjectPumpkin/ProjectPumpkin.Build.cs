@@ -9,7 +9,7 @@ public class ProjectPumpkin : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(new string[] { 
-			"Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", 
-			"AIModule", "Niagara", "EnhancedInput", "MassActors", "MassHorde"});
+			"Core", "CoreUObject", "Engine", "InputCore",
+			"EnhancedInput", "MassActors", "MassHorde"});
     }
 }

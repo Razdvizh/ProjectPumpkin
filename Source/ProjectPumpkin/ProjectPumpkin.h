@@ -5,3 +5,6 @@
 #include "CoreMinimal.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogProjectPumpkin, Log, All);
+
+#define ECC_Floor ECC_GameTraceChannel1
+#define ECC_Projectile ECC_GameTraceChannel2
