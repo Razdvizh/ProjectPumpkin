@@ -2,4 +2,9 @@
 
 
 #include "VineSubsystem.h"
+#include "Engine/World.h"
 
+void UVineSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+
+}
