@@ -12,6 +12,7 @@
 #include "DamageInfo.h"
 #include "MassHordeHelpers.h"
 #include "Interactable.h"
+#include "HordeCharacter.h"
 #pragma endregion Gameplay
 #pragma region Input
 #include "EnhancedInputComponent.h"
@@ -81,6 +82,14 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& Obj
 	CameraBoom->PrimaryComponentTick.bCanEverTick = false;
 	TopDownCameraComponent->PrimaryComponentTick.bCanEverTick = false;
 	MassAgent->PrimaryComponentTick.bCanEverTick = false;
+}
+
+void AProjectPumpkinCharacter::Interact_Implementation(AActor* Initiator)
+{
+	if (Initiator->IsA<AHordeCharacter>())
+	{
+		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigatorController(), Initiator);
+	}
 }
 
 void AProjectPumpkinCharacter::BeginPlay()

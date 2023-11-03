@@ -61,7 +61,7 @@ void AHordeCharacter::Interact_Implementation(AActor* Initiator)
 	}
 	else if (Initiator->IsA<AProjectile>())
 	{
-		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigator()->GetController(), Initiator);
+		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigatorController(), Initiator);
 	}
 }
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MortalCharacter.h"
+#include "Interactable.h"
 #include "ProjectPumpkinCharacter.generated.h"
 
 class UInputMappingContext;
@@ -13,7 +14,7 @@ class UMassAgentComponent;
 struct FInputActionValue;
 
 UCLASS(Blueprintable)
-class AProjectPumpkinCharacter : public AMortalCharacter
+class AProjectPumpkinCharacter : public AMortalCharacter, public IInteractable
 {
 	GENERATED_BODY()
 
@@ -24,6 +25,8 @@ public:
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+	virtual void Interact_Implementation(AActor* Initiator) override;
 
 protected:
 	virtual void BeginPlay() override;
