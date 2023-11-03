@@ -11,6 +11,7 @@
 #include "HealthComponent.h"
 #include "DamageInfo.h"
 #include "MassHordeHelpers.h"
+#include "Interactable.h"
 #pragma endregion Gameplay
 #pragma region Input
 #include "EnhancedInputComponent.h"
@@ -95,6 +96,8 @@ void AProjectPumpkinCharacter::BeginPlay()
 
 		PlayerController->SetControlRotation(CameraBoom->GetComponentRotation());
 	}
+
+	AActor::OnActorHit.AddUniqueDynamic(this, &AProjectPumpkinCharacter::OnActorHit);
 }
 
 void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -112,6 +115,14 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 void AProjectPumpkinCharacter::OnDemise()
 {
 	UMassHordeHelpers::DestroyMassAgent(MassAgent);
+}
+
+void AProjectPumpkinCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor->Implements<UInteractable>())
+	{
+		IInteractable::Execute_Interact(OtherActor, this);
+	}
 }
 
 void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)

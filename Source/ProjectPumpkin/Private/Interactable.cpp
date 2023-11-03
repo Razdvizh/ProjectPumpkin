@@ -2,5 +2,6 @@
 
 
 #include "Interactable.h"
+#include "GameFramework/Actor.h"
 
 // Add default functionality here for any IInteractable functions that are not pure virtual.

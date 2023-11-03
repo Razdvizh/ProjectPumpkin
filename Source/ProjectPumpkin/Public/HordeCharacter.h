@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MortalCharacter.h"
+#include "Interactable.h"
 #include "HordeCharacter.generated.h"
 
 class UStaticMeshComponent;
@@ -14,7 +15,7 @@ class AActor;
 struct FDamageEvent;
 
 UCLASS()
-class PROJECTPUMPKIN_API AHordeCharacter : public AMortalCharacter
+class PROJECTPUMPKIN_API AHordeCharacter : public AMortalCharacter, public IInteractable
 {
 	GENERATED_BODY()
 
@@ -22,13 +23,10 @@ public:
 	// Sets default values for this character's properties
 	AHordeCharacter(const FObjectInitializer& ObjectInitializer);
 
+	virtual void Interact_Implementation(AActor* Initiator) override;
+
 protected:
 	virtual void OnDemise() override;
-
-	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	void OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character", meta = (ToolTip = "How far and in what direction the character will be pushed. Zero is no pushback."))

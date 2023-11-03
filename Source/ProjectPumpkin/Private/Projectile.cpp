@@ -4,6 +4,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Interactable.h"
 #if WITH_EDITORONLY_DATA
 #include "Components/ArrowComponent.h"
 #endif
@@ -46,4 +47,21 @@ AProjectile::AProjectile()
 	Collision->PrimaryComponentTick.bCanEverTick = false;
 	Mesh->PrimaryComponentTick.bCanEverTick = false;
 	Arrow->PrimaryComponentTick.bCanEverTick = false;
+}
+
+void AProjectile::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor->Implements<UInteractable>())
+	{
+		IInteractable::Execute_Interact(OtherActor, this);
+
+		Destroy();
+	}
+}
+
+void AProjectile::BeginPlay()
+{
+	AActor::OnActorHit.AddUniqueDynamic(this, &AProjectile::OnActorHit);
+
+	Super::BeginPlay();
 }
