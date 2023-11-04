@@ -18,7 +18,7 @@ ASlowingVine::ASlowingVine()
 	SlowingVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("SlowingVolume"));
 	RootComponent = SlowingVolume;
 	
-	SlowingVolume->SetBoxExtent(FVector(192.f, 192.f, 128.f));
+	SlowingVolume->SetBoxExtent(FVector(187.f, 187.f, 128.f));
 
 	SlowingVolume->CanCharacterStepUpOn = ECB_No;
 	SlowingVolume->SetGenerateOverlapEvents(true);
