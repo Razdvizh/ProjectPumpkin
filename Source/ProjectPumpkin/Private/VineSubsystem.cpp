@@ -3,19 +3,41 @@
 #include "VineSubsystem.h"
 #include "SlowingVine.h"
 #include "ProjectPumpkin/ProjectPumpkin.h"
+#include "Curves/CurveFloat.h"
+#include "Curves/RichCurve.h"
 #include "EngineUtils.h"
 #include "Engine/World.h"
 #include "GameFramework/WorldSettings.h"
 #include "Modules/ModuleManager.h"
 #include "ProjectPumpkinSettings.h"
 
-constexpr float NEW_Z_OFFSET = 50.f;
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+static TAutoConsoleVariable<bool> CVarActivateAllVines(
+	TEXT("Pumpkin.ActivateAllVines"),
+	false,
+	TEXT("Activates all incative vines in the world."),
+	ECVF_Default
+);
+#endif
+
+UVineSubsystem::UVineSubsystem()
+	: TimeToActivate(1.5f),
+	CurrentActivationTime(0.f),
+	bNeedsToTick(false),
+	ActivationCurve()
+{
+}
 
 void UVineSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	FProjectPumpkinModule* PumpkinModule = &FModuleManager::LoadModuleChecked<FProjectPumpkinModule>(TEXT("ProjectPumpkin"));
+	const UProjectPumpkinSettings* ProjectPumpkinSettings = PumpkinModule->GetProjectPumpkinSettings();
 
-	ActiveVinesRatio = PumpkinModule->GetProjectPumpkinSettings()->GetActiveVinesRatio();
+	const float ActiveVinesRatio = ProjectPumpkinSettings->GetActiveVinesRatio();
+	const float NewZOffset = ProjectPumpkinSettings->GetNewZOffset();
+
+	TimeToActivate = ProjectPumpkinSettings->GetTimeToActivate();
+	ActivationCurve = ProjectPumpkinSettings->GetActivationCurve();
 
 	if (ActiveVinesRatio < 1.f)
 	{
@@ -37,20 +59,64 @@ void UVineSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 			SlowingVines.SwapMemory(i1, i2);
 		}
 
-		const float NewZLocation = (InWorld.GetWorldSettings()->KillZ) + NEW_Z_OFFSET;
+		const float NewZLocation = (InWorld.GetWorldSettings()->KillZ) + NewZOffset;
 		for (i = FMath::RoundToInt32(Num * ActiveVinesRatio); i < Num; i++)
 		{
 			ASlowingVine* SlowingVine = SlowingVines[i];
-			FVector OriginalLocation = SlowingVine->GetActorLocation();
+			const FVector OriginalLocation = SlowingVine->GetActorLocation();
+			const FVector NewLocation = FVector(OriginalLocation.X, OriginalLocation.Y, NewZLocation);
 
-			InactiveVines.Add(SlowingVine, OriginalLocation);
+			InactiveVines.Add(SlowingVine, TTuple<const FVector, const FVector>(OriginalLocation, NewLocation));
 
-			SlowingVine->SetActorLocation(FVector(OriginalLocation.X, OriginalLocation.Y, NewZLocation));
+			SlowingVine->SetActorLocation(NewLocation);
 		}
 	}
 }
 
+void UVineSubsystem::Tick(float DeltaTime)
+{
+	UTickableWorldSubsystem::Tick(DeltaTime);
+
+	if (CurrentActivationTime < TimeToActivate)
+	{
+		CurrentActivationTime += DeltaTime;
+		for (TPair<ASlowingVine*, TTuple<const FVector, const FVector>>& InactiveVine : InactiveVines)
+		{
+			const float TimeRatio = FMath::Clamp(CurrentActivationTime / TimeToActivate, 0.f, 1.f);
+			const float ActivationAlpha = ActivationCurve.GetRichCurveConst()->Eval(TimeRatio);
+			const FVector TargetLocation = InactiveVine.Value.Key;
+			const FVector InitialLocation = InactiveVine.Value.Value;
+			const FVector CurrentLocation = FMath::Lerp(InitialLocation, TargetLocation, ActivationAlpha);
+
+			InactiveVine.Key->SetActorLocation(CurrentLocation);
+		}
+	}
+	else
+	{
+		bNeedsToTick = false;
+	}
+}
+
+bool UVineSubsystem::IsTickable() const
+{
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+	bNeedsToTick = bNeedsToTick || CVarActivateAllVines.GetValueOnGameThread();
+#endif
+
+	return bNeedsToTick;
+}
+
+TStatId UVineSubsystem::GetStatId() const
+{
+	RETURN_QUICK_DECLARE_CYCLE_STAT(UVineSubsystem, STATGROUP_Tickables);
+}
+
+void UVineSubsystem::ActivateAllVines()
+{
+	bNeedsToTick = true;
+}
+
 bool UVineSubsystem::DoesSupportWorldType(const EWorldType::Type WorldType) const
 {
-	return WorldType == EWorldType::Game || EWorldType::PIE;
+	return WorldType == EWorldType::Game || WorldType == EWorldType::PIE;
 }

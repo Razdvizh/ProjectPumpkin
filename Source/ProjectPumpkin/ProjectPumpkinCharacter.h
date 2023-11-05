@@ -5,12 +5,14 @@
 #include "CoreMinimal.h"
 #include "MortalCharacter.h"
 #include "Interactable.h"
+#include "Templates/SubclassOf.h"
 #include "ProjectPumpkinCharacter.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 class UHealthComponent;
 class UMassAgentComponent;
+class AProjectile;
 struct FInputActionValue;
 
 UCLASS(Blueprintable)
@@ -42,14 +44,19 @@ protected:
 
 	void Look();
 
+	void Shoot();
+
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 private:
 	void DrawCursorHitLocation(const FVector& HitLocation);
 #endif
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (ToolTip = "Offset for character rotation during look towards the mouse cursor"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (ToolTip = "Offset for character rotation during look towards the mouse cursor."))
 	FRotator LookOffset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile", meta = (DisplayName = "Projectile", ToolTip = "Projectile to spawn."))
+	TSubclassOf<AProjectile> ProjectileClass;
 
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -71,4 +78,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
 	UInputAction* LookAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
+	UInputAction* ShootAction;
+
 };

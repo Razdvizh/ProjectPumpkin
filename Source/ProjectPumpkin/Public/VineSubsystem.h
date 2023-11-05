@@ -8,23 +8,45 @@
 
 class UWorld;
 class ASlowingVine;
+struct FRuntimeFloatCurve;
+struct TStatId;
 
 /**
  * Subsystem that randomizes activation of vines on the map.
  */
 UCLASS()
-class PROJECTPUMPKIN_API UVineSubsystem : public UWorldSubsystem
+class PROJECTPUMPKIN_API UVineSubsystem : public UTickableWorldSubsystem
 {
 	GENERATED_BODY()
 
 public:
+	UVineSubsystem();
+
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	virtual bool IsTickable() const override;
+
+	virtual TStatId GetStatId() const override;
+
+	UFUNCTION(BlueprintCallable, Category = "Vine Subsystem")
+	void ActivateAllVines();
 	
 protected:
 	virtual bool DoesSupportWorldType(const EWorldType::Type WorldType) const override;
 
-	float ActiveVinesRatio;
+	TMap<ASlowingVine*, TTuple<const FVector, const FVector>> InactiveVines;
 
-	TMap<ASlowingVine*, FVector> InactiveVines;
+private:
+	float TimeToActivate;
+
+	float CurrentActivationTime;
+
+	mutable bool bNeedsToTick;
+
+	FRuntimeFloatCurve ActivationCurve;
+
+	TArray<ASlowingVine*> VinesToActivate;
 
 };

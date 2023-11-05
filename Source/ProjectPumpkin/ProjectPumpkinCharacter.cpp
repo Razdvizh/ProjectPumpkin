@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MassAgentComponent.h"
@@ -13,6 +14,7 @@
 #include "MassHordeHelpers.h"
 #include "Interactable.h"
 #include "HordeCharacter.h"
+#include "Projectile.h"
 #pragma endregion Gameplay
 #pragma region Input
 #include "EnhancedInputComponent.h"
@@ -44,7 +46,8 @@ static TAutoConsoleVariable<bool> CVarDebugMouseHit(
 
 AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer),
-	  LookOffset(0.f, 180.f, 0.f)
+	  LookOffset(0.f, 180.f, 0.f),
+	  ProjectileClass(AProjectile::StaticClass())
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -118,6 +121,8 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AProjectPumpkinCharacter::Move);
 
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AProjectPumpkinCharacter::Look);
+
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AProjectPumpkinCharacter::Shoot);
 	}
 }
 
@@ -177,6 +182,20 @@ void AProjectPumpkinCharacter::Look()
 			SetActorRotation(NewActorRotation);
 		}
 	}
+}
+
+void AProjectPumpkinCharacter::Shoot()
+{
+	const FTransform HandTransform = GetMesh()->GetBoneTransform(TEXT("hand_r"), RTS_World);
+	const FTransform SpawnTransform = FTransform(GetActorRotation(), HandTransform.GetLocation(), HandTransform.GetScale3D());
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = this;
+
+	AProjectile* Projectile = Cast<AProjectile>(GetWorld()->SpawnActor(ProjectileClass, &SpawnTransform, SpawnParams));
+	UProjectileMovementComponent* ProjectileMovement = Projectile->GetProjectileMovement();
+	ProjectileMovement->Velocity += GetCharacterMovement()->Velocity;
 }
 
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)

@@ -2,7 +2,12 @@
 
 
 #include "ProjectPumpkinSettings.h"
+#include "Curves/CurveFloat.h"
 
-UProjectPumpkinSettings::UProjectPumpkinSettings() : ActiveVinesRatio(0.5f)
+UProjectPumpkinSettings::UProjectPumpkinSettings() 
+	: ActiveVinesRatio(1.f),
+	TimeToActivate(1.5f),
+	NewZOffset(50.f),
+	ActivationCurve()
 {
 }
