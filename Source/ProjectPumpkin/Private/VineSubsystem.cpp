@@ -8,6 +8,7 @@
 #include "EngineUtils.h"
 #include "Engine/World.h"
 #include "GameFramework/WorldSettings.h"
+#include "Components/SceneComponent.h"
 #include "Modules/ModuleManager.h"
 #include "ProjectPumpkinSettings.h"
 
@@ -36,7 +37,11 @@ void UVineSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 
 		for (TActorIterator<ASlowingVine> It(&InWorld); It; ++It)
 		{
-			SlowingVines.Emplace(*It);
+			ASlowingVine* const Vine = *It;
+			if (Vine->GetRootComponent()->Mobility == EComponentMobility::Movable)
+			{
+				SlowingVines.Emplace(Vine);
+			}
 		}
 
 		InactiveVines.Reserve(SlowingVines.Num());
