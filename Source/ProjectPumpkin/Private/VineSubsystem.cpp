@@ -111,9 +111,39 @@ TStatId UVineSubsystem::GetStatId() const
 	RETURN_QUICK_DECLARE_CYCLE_STAT(UVineSubsystem, STATGROUP_Tickables);
 }
 
-void UVineSubsystem::ActivateAllVines()
+void UVineSubsystem::ActivateAllVines() const
 {
 	bNeedsToTick = true;
+}
+
+bool UVineSubsystem::ActivateVine(ASlowingVine* Vine)
+{
+	const bool bIsInactive = InactiveVines.Contains(Vine);
+	if (bIsInactive)
+	{
+		VinesToActivate.Emplace(Vine);
+	}
+
+	return bIsInactive;
+}
+
+void UVineSubsystem::ActivateVines(TArray<ASlowingVine*> Vines)
+{
+	for (const auto Vine : Vines)
+	{
+		if (!ActivateVine(Vine))
+		{
+			UE_LOG(LogProjectPumpkin, Display, TEXT("%s is already active!"), *Vine->GetFName().ToString());
+		}
+	}
+}
+
+void UVineSubsystem::GetInactiveVines(TArray<ASlowingVine*>& Vines) const
+{
+	for (const auto& InactiveVine : InactiveVines)
+	{
+		Vines.Emplace(InactiveVine.Key);
+	}
 }
 
 bool UVineSubsystem::DoesSupportWorldType(const EWorldType::Type WorldType) const

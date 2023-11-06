@@ -31,7 +31,19 @@ public:
 	virtual TStatId GetStatId() const override;
 
 	UFUNCTION(BlueprintCallable, Category = "Vine Subsystem")
-	void ActivateAllVines();
+	void ActivateAllVines() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Vine Subsystem", meta = (ToolTip = "Activates provided slowing vine. Returns result of the activation, false for already active vines."))
+	bool ActivateVine(ASlowingVine* Vine);
+
+	UFUNCTION(BlueprintCallable, Category = "Vine Subsystem")
+	void ActivateVines(TArray<ASlowingVine*> Vines);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Vine Subsystem")
+	void GetInactiveVines(TArray<ASlowingVine*>& Vines) const;
+
+	UFUNCTION(BlueprintPure, Category = "Vine Subsystem")
+	FORCEINLINE int32 GetInactiveVinesNum() const { return InactiveVines.Num(); }
 	
 protected:
 	virtual bool DoesSupportWorldType(const EWorldType::Type WorldType) const override;
