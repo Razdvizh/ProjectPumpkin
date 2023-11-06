@@ -29,7 +29,7 @@ public:
 	FORCEINLINE float GetNewZOffset() const { return NewZOffset; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Project Pumpkin Settings")
-	FORCEINLINE FRuntimeFloatCurve GetActivationCurve() const {return ActivationCurve; }
+	FORCEINLINE FRuntimeFloatCurve GetActivationCurve() const { return ActivationCurve; }
 
 private:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ClampMin = 0.f, UIMin = 0.f, ClampMax = 1.f, UIMax = 1.f, ToolTip = "Amount of slowing vines that will be \"active\" when the game starts. Zero is no active vines, one means all vines are active."))
@@ -41,7 +41,7 @@ private:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ClampMin = 0.f, UIMin = 0.f, ToolTip = "How close the height of inactive vine to its original height. Zero means as down as possible."))
 	float NewZOffset;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ToolTip = "Defines the manner in which inactive vine will reappear."))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ToolTip = "Defines the manner in which inactive vine will reappear."))
 	FRuntimeFloatCurve ActivationCurve;
 
 };
