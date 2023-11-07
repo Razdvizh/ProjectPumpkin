@@ -163,7 +163,7 @@ void AProjectPumpkinCharacter::Look()
 	{
 		FHitResult Hit;
 		APlayerController* PlayerController = StaticCast<APlayerController*, AController*>(Controller);
-		if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Floor, false, Hit))
+		if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Mouse, false, Hit))
 		{
 			const FVector MousePosition = FVector(Hit.ImpactPoint.X, Hit.ImpactPoint.Y, 0.f);
 			#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
