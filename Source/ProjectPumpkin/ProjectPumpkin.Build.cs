@@ -10,6 +10,6 @@ public class ProjectPumpkin : ModuleRules
 
         PublicDependencyModuleNames.AddRange(new string[] { 
 			"Core", "CoreUObject", "Engine", "InputCore",
-			"EnhancedInput", "MassActors", "MassHorde"});
+			"EnhancedInput", "MassActors", "Slate", "MassHorde"});
     }
 }
