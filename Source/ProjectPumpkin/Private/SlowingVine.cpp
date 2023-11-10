@@ -3,54 +3,49 @@
 
 #include "SlowingVine.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/BoxComponent.h"
-#include "GameFramework/Character.h"
+#include "ActivationVolumeComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/Actor.h"
+#include "Templates/SubclassOf.h"
+#include "ProjectPumpkin/ProjectPumpkinCharacter.h"
 #include "ProjectPumpkin/ProjectPumpkin.h"
-#include "Engine/HitResult.h"
 
 // Sets default values
 ASlowingVine::ASlowingVine() 
 	: CachedMovementComponent(nullptr),
 	SpeedPenalty(70.f)
 {
-	SlowingVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("SlowingVolume"));
+	SlowingVolume = CreateDefaultSubobject<UActivationVolumeComponent>(TEXT("SlowingVolume"));
 	RootComponent = SlowingVolume;
-	
-	SlowingVolume->SetBoxExtent(FVector(187.f, 187.f, 128.f));
 
-	SlowingVolume->CanCharacterStepUpOn = ECB_No;
-	SlowingVolume->SetGenerateOverlapEvents(true);
-	SlowingVolume->SetCollisionProfileName(TEXT("Trigger"));
-	SlowingVolume->SetCollisionResponseToChannel(ECollisionChannel::ECC_Projectile, ECR_Overlap);
+	SlowingVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
 	
 	VineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Vine"));
 
 	VineMesh->SetupAttachment(SlowingVolume);
-	VineMesh->SetRelativeLocation(FVector(0.f, 0.f, -128.f));
 
 	VineMesh->CanCharacterStepUpOn = ECB_Yes;
 	VineMesh->SetGenerateOverlapEvents(false);
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+	SlowingVolume->PrimaryComponentTick.bCanEverTick = false;
+	VineMesh->PrimaryComponentTick.bCanEverTick = false;
 }
 
 // Called when the game starts or when spawned
 void ASlowingVine::BeginPlay()
 {	
-	SlowingVolume->OnComponentBeginOverlap.AddUniqueDynamic(this, &ASlowingVine::OnSlowingStarted);
-	SlowingVolume->OnComponentEndOverlap.AddUniqueDynamic(this, &ASlowingVine::OnSlowingStopped);
+	SlowingVolume->OnVolumeActivated.AddUniqueDynamic(this, &ASlowingVine::OnSlowingStarted);
+	SlowingVolume->OnVolumeDeactivated.AddUniqueDynamic(this, &ASlowingVine::OnSlowingStopped);
 
 	Super::BeginPlay();
 }
 
-void ASlowingVine::OnSlowingStarted(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ASlowingVine::OnSlowingStarted(AActor* Activator)
 {
-	if (OtherActor->IsA<TSubclassOf<ACharacter>>(SlowingTargetClass))
+	ACharacter* Character = Cast<ACharacter>(Activator);
+	if (ensureMsgf(Character, TEXT("Slowing Vine was activated by %s which is not a character. No slowing will be performed."), *Activator->GetFName().ToString()))
 	{
-		ACharacter* Character = Cast<ACharacter>(OtherActor);
 		CachedMovementComponent = Character->GetCharacterMovement();
 		CachedMaxSpeed = CachedMovementComponent->MaxWalkSpeed;
 
@@ -66,7 +61,7 @@ void ASlowingVine::OnSlowingStarted(UPrimitiveComponent* OverlappedComponent, AA
 	}
 }
 
-void ASlowingVine::OnSlowingStopped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void ASlowingVine::OnSlowingStopped(AActor* Activator)
 {
 	if (CachedMovementComponent)
 	{

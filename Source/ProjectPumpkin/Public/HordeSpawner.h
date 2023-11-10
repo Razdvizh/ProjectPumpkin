@@ -4,12 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "MassSpawner.h"
-#include "Templates/SubclassOf.h"
 #include "HordeSpawner.generated.h"
 
-class UBoxComponent;
-class UPrimitiveComponent;
 class AActor;
+class UActivationVolumeComponent;
 struct FHitResult;
 struct FTimerHandle;
 
@@ -25,19 +23,7 @@ public:
 	AHordeSpawner();
 
 	UFUNCTION(BlueprintCallable, Category = "Mass")
-	void SetActivatorClass(const TSubclassOf<AActor> Class);
-
-	UFUNCTION(BlueprintCallable, Category = "Mass")
-	void SetActivationVolume(UBoxComponent* Volume);
-
-	UFUNCTION(BlueprintCallable, Category = "Mass")
 	void SetSpawnDelay(float Delay);
-
-	UFUNCTION(BlueprintCallable, Category = "Mass")
-	FORCEINLINE TSubclassOf<AActor> GetActivatorClass() const { return ActivatorClass; }
-
-	UFUNCTION(BlueprintCallable, Category = "Mass")
-	FORCEINLINE UBoxComponent* GetActivationVolume() const { return ActivationVolume; }
 
 	UFUNCTION(BlueprintPure, Category = "Mass")
 	FORCEINLINE float GetSpawnDelay() const { return SpawnDelay; }
@@ -46,16 +32,13 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	virtual void OnSpawnerActivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnSpawnerActivate(AActor* Activator);
 
 	UFUNCTION()
-	virtual void OnSpawnerDeactivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	virtual void OnSpawnerDeactivate(AActor* Activator);
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mass", meta = (DisplayName = "Activator", ToolTip = "Class that will trigger the spawn when it overlaps with ActivationVolume."))
-	TSubclassOf<AActor> ActivatorClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mass", meta = (ToolTip = "Collision that will activate the spawner while instance of Activator stays in the collision."))
-	UBoxComponent* ActivationVolume;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mass", meta = (ToolTip = "Area that activates the spawner. Check Activators to specify who can trigger spawning."))
+	UActivationVolumeComponent* ActivationVolume;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetSpawnDelay, Category = "Mass", meta = (Units = "s", ClampMin = 0.1f, UIMin = 0.1f, ToolTip = "Delay between spawn intervals of the entities."))
 	float SpawnDelay;

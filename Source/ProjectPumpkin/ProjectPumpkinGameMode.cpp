@@ -78,7 +78,7 @@ void AProjectPumpkinGameMode::PostEditChangeProperty(FPropertyChangedEvent& Prop
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	const FName PropertyName = PropertyChangedEvent.Property->GetFName();
+	const FName PropertyName = PropertyChangedEvent.GetMemberPropertyName();
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(AProjectPumpkinGameMode, PlayerControllerClass))
 	{
 		if (!PlayerControllerClass->IsChildOf(APlayerController::StaticClass()))
