@@ -65,3 +65,11 @@ void AProjectile::BeginPlay()
 
 	Super::BeginPlay();
 }
+
+void AProjectile::LifeSpanExpired()
+{
+	AsyncTask(ENamedThreads::GameThread, [this]()
+	{
+		Super::LifeSpanExpired();
+	});
+}

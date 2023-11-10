@@ -35,6 +35,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void LifeSpanExpired() override;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
 	USphereComponent* Collision;
