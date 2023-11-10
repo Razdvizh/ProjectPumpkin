@@ -27,7 +27,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLethalHealthReachedEvent);
 * Represents actor lifespan based on health points. Only unsigned health and damage input is considered valid. 
 * Always begins play with full health (current health is always equal to the maximum health).
 */
-UCLASS( ClassGroup=(ProjectPumpkin), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTPUMPKIN_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()

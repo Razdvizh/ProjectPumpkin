@@ -7,10 +7,10 @@
 #include "ProjectPumpkinGameState.generated.h"
 
 /**
- * Strongly typed game state for project-wide gamemode
+ * 
  */
 UCLASS()
-class PROJECTPUMPKIN_API AProjectPumpkinGameState final : public AGameStateBase
+class PROJECTPUMPKIN_API AProjectPumpkinGameState : public AGameStateBase
 {
 	GENERATED_BODY()
 	

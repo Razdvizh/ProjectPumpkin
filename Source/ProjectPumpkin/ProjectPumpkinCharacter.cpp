@@ -5,12 +5,16 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "MassAgentComponent.h"
 #include "HealthComponent.h"
 #include "DamageInfo.h"
 #include "MassHordeHelpers.h"
+#include "Interactable.h"
+#include "HordeCharacter.h"
+#include "Projectile.h"
 #pragma endregion Gameplay
 #pragma region Input
 #include "EnhancedInputComponent.h"
@@ -42,7 +46,8 @@ static TAutoConsoleVariable<bool> CVarDebugMouseHit(
 
 AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer),
-	  LookOffset(0.f, 180.f, 0.f)
+	  LookOffset(0.f, 180.f, 0.f),
+	  ProjectileClass(AProjectile::StaticClass())
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -82,6 +87,14 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& Obj
 	MassAgent->PrimaryComponentTick.bCanEverTick = false;
 }
 
+void AProjectPumpkinCharacter::Interact_Implementation(AActor* Initiator)
+{
+	if (Initiator->IsA<AHordeCharacter>())
+	{
+		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigatorController(), Initiator);
+	}
+}
+
 void AProjectPumpkinCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -95,6 +108,8 @@ void AProjectPumpkinCharacter::BeginPlay()
 
 		PlayerController->SetControlRotation(CameraBoom->GetComponentRotation());
 	}
+
+	AActor::OnActorHit.AddUniqueDynamic(this, &AProjectPumpkinCharacter::OnActorHit);
 }
 
 void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -106,12 +121,22 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AProjectPumpkinCharacter::Move);
 
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AProjectPumpkinCharacter::Look);
+
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AProjectPumpkinCharacter::Shoot);
 	}
 }
 
 void AProjectPumpkinCharacter::OnDemise()
 {
 	UMassHordeHelpers::DestroyMassAgent(MassAgent);
+}
+
+void AProjectPumpkinCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor->Implements<UInteractable>())
+	{
+		IInteractable::Execute_Interact(OtherActor, this);
+	}
 }
 
 void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)
@@ -138,7 +163,7 @@ void AProjectPumpkinCharacter::Look()
 	{
 		FHitResult Hit;
 		APlayerController* PlayerController = StaticCast<APlayerController*, AController*>(Controller);
-		if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Floor, false, Hit))
+		if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Mouse, false, Hit))
 		{
 			const FVector MousePosition = FVector(Hit.ImpactPoint.X, Hit.ImpactPoint.Y, 0.f);
 			#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
@@ -157,6 +182,20 @@ void AProjectPumpkinCharacter::Look()
 			SetActorRotation(NewActorRotation);
 		}
 	}
+}
+
+void AProjectPumpkinCharacter::Shoot()
+{
+	const FTransform HandTransform = GetMesh()->GetBoneTransform(TEXT("hand_r"), RTS_World);
+	const FTransform SpawnTransform = FTransform(GetActorRotation(), HandTransform.GetLocation(), HandTransform.GetScale3D());
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = this;
+
+	AProjectile* Projectile = Cast<AProjectile>(GetWorld()->SpawnActor(ProjectileClass, &SpawnTransform, SpawnParams));
+	UProjectileMovementComponent* ProjectileMovement = Projectile->GetProjectileMovement();
+	ProjectileMovement->Velocity += GetCharacterMovement()->Velocity;
 }
 
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)

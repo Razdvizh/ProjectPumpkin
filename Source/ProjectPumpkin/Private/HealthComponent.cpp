@@ -104,7 +104,7 @@ void UHealthComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 	
-	const FName PropertyName = PropertyChangedEvent.Property->GetFName();
+	const FName PropertyName = PropertyChangedEvent.GetMemberPropertyName();
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(UHealthComponent, MaxHealth))
 	{
 		CurrentHealth = MaxHealth;

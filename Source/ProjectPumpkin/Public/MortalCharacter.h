@@ -25,6 +25,8 @@ protected:
 	UFUNCTION()
 	virtual void OnDemise() PURE_VIRTUAL(&AMortalCharacter::OnDemise, );
 
+	virtual void BeginPlay() override;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	UHealthComponent* Health;

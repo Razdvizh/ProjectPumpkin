@@ -13,5 +13,5 @@ UCLASS()
 class PROJECTPUMPKIN_API AProjectPumpkinPlayerState final : public APlayerState
 {
 	GENERATED_BODY()
-	
+
 };

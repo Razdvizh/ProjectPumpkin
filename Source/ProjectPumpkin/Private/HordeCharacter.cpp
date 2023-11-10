@@ -11,6 +11,7 @@
 #include "MassAgentComponent.h"
 #include "HealthComponent.h"
 #include "MassHordeHelpers.h"
+#include "Projectile.h"
 #pragma endregion Gameplay
 #pragma region Engine
 #include "Engine/DamageEvents.h"
@@ -37,23 +38,16 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 	Health->SetMaxHealth(4.f);
 	Health->SetLethalHealth(0.f);
 
-	AActor::OnActorHit.AddDynamic(this, &AHordeCharacter::OnActorHit);
-
 	PrimaryActorTick.bCanEverTick = false;
 	CharacterMesh->PrimaryComponentTick.bCanEverTick = false;
 	MassAgent->PrimaryComponentTick.bCanEverTick = false;
 }
 
-void AHordeCharacter::OnDemise()
+void AHordeCharacter::Interact_Implementation(AActor* Initiator)
 {
-	UMassHordeHelpers::DestroyMassAgent(MassAgent);
-}
-
-void AHordeCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
-{
-	if (OtherActor->IsA<AProjectPumpkinCharacter>() && !FMath::IsNearlyZero(PushbackDisplacement))
+	if (Initiator->IsA<AProjectPumpkinCharacter>())
 	{
-		AProjectPumpkinCharacter* PumpkinCharacter = static_cast<AProjectPumpkinCharacter*>(OtherActor);
+		AProjectPumpkinCharacter* PumpkinCharacter = static_cast<AProjectPumpkinCharacter*>(Initiator);
 		FVector LaunchVelocity;
 		const FVector StartPosition = GetActorLocation();
 		const FVector EndPosition = (GetActorForwardVector() * PushbackDisplacement) + StartPosition;
@@ -63,6 +57,15 @@ void AHordeCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector 
 		LaunchVelocity = LaunchVelocity * LaunchBoost;
 		LaunchCharacter(LaunchVelocity, true, true);
 
-		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, PumpkinCharacter->GetController(), OtherActor);
+		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, PumpkinCharacter->GetController(), PumpkinCharacter);
 	}
+	else if (Initiator->IsA<AProjectile>())
+	{
+		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigatorController(), Initiator);
+	}
+}
+
+void AHordeCharacter::OnDemise()
+{
+	UMassHordeHelpers::DestroyMassAgent(MassAgent);
 }
