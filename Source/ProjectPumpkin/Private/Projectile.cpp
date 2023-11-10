@@ -40,13 +40,16 @@ AProjectile::AProjectile()
 	Arrow->ArrowSize = 0.7f;
 	Arrow->ArrowLength = 70.f;
 	Arrow->bTreatAsASprite = true;
+	Arrow->SetSimulatePhysics(false);
 #endif
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	Collision->PrimaryComponentTick.bCanEverTick = false;
 	Mesh->PrimaryComponentTick.bCanEverTick = false;
+#if WITH_EDITORONLY_DATA
 	Arrow->PrimaryComponentTick.bCanEverTick = false;
+#endif
 }
 
 void AProjectile::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
