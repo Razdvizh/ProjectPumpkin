@@ -33,9 +33,17 @@ void AHordeSpawner::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AHordeSpawner::DoSpawningAsync()
+{
+	AsyncTask(ENamedThreads::GameThread, [this]()
+	{
+		DoSpawning();
+	});
+}
+
 void AHordeSpawner::OnSpawnerActivate(AActor* Activator)
 {
-	GetWorld()->GetTimerManager().SetTimer(SpawnIntervalHandle, this, &AMassSpawner::DoSpawning, SpawnDelay, true);
+	GetWorld()->GetTimerManager().SetTimer(SpawnIntervalHandle, this, &AHordeSpawner::DoSpawningAsync, SpawnDelay, true);
 }
 
 void AHordeSpawner::OnSpawnerDeactivate(AActor* Activator)

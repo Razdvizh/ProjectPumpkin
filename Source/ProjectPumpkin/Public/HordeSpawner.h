@@ -31,6 +31,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void DoSpawningAsync();
+
 	UFUNCTION()
 	virtual void OnSpawnerActivate(AActor* Activator);
 
