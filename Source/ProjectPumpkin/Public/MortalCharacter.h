@@ -19,6 +19,12 @@ public:
 	// Sets default values for this character's properties
 	AMortalCharacter(const FObjectInitializer& ObjectInitialier);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Mortal Character")
+	FORCEINLINE UHealthComponent* GetHealthComponent() const { return Health; }
+
+	UFUNCTION(BlueprintCallable, Category = "Mortal Character")
+	FORCEINLINE FDamageInfo GetDamageInfo() const { return DamageInfo; }
+
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
