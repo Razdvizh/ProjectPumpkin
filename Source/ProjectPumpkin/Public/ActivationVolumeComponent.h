@@ -45,7 +45,7 @@ protected:
 	virtual void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Activation Volume Component", meta = (OnlyPlaceable, DisplayName = "Activators", ToolTip = "Who can trigger activation events. Doesn't account for derived classes."))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Activation Volume Component", meta = (DisplayName = "Activators", ToolTip = "Who can trigger activation events. Doesn't account for derived classes."))
 	TSet<TSubclassOf<AActor>> ActivatorClasses;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Activation Volume Component", meta = (ToolTip = "Regulates the ability of classes that are derived from activator classes to act as activators."))

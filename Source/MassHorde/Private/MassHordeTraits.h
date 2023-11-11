@@ -23,6 +23,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Mass|Horde")
 	FPlayerFragment Player;
 
-	UPROPERTY(EditAnywhere, Category = "MassHorde")
+	UPROPERTY(EditAnywhere, Category = "")
 	FMassMovementParameters MovementParameters;
 };

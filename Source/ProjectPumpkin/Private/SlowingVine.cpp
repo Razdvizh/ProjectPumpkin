@@ -11,10 +11,8 @@
 
 // Sets default values
 ASlowingVine::ASlowingVine() 
-	: SpeedPenalty(70.f),
-	CachedMovementComponent(nullptr),
-	CachedMaxSpeed(0.f)
-
+	: CachedMovementComponent(nullptr),
+	SpeedPenalty(70.f)
 {
 	SlowingVolume = CreateDefaultSubobject<UActivationVolumeComponent>(TEXT("SlowingVolume"));
 	RootComponent = SlowingVolume;
