@@ -13,7 +13,7 @@
 constexpr int32 NUM_STAGES = 3;
 constexpr float MEDIUM_HEAL = 1.f;
 constexpr float LARGE_HEAL = 2.f;
-constexpr double KEY_TIME_TOLERANCE = 1.0e-3;
+constexpr double KEY_TIME_TOLERANCE = 1.0e-2;
 
 // Sets default values
 AGrowingPumpkin::AGrowingPumpkin()
@@ -27,17 +27,14 @@ AGrowingPumpkin::AGrowingPumpkin()
 
 	PumpkinMesh->SetGenerateOverlapEvents(false);
 
-	InitialScale3D = FVector(0.25f, 0.25f, 0.25f);
-	PumpkinMesh->SetRelativeScale3D(InitialScale3D);
-
 	ActivationVolume = CreateDefaultSubobject<UActivationVolumeComponent>(TEXT("ActivationVolume"));
 	ActivationVolume->SetupAttachment(RootComponent);
 
 	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
 
-	StageSizes.Add(EGrowingStage::Small, InitialScale3D);
-	StageSizes.Add(EGrowingStage::Medium, FVector(0.75f, 0.75f, 0.75f));
-	StageSizes.Add(EGrowingStage::Large, FVector(1.25f, 1.25f, 1.25f));
+	StageSizes.Add(EGrowingStage::Small, FVector(1.0f, 1.0f, 1.0f));
+	StageSizes.Add(EGrowingStage::Medium, FVector(1.25f, 1.25f, 1.25f));
+	StageSizes.Add(EGrowingStage::Large, FVector(1.5f, 1.5f, 1.5f));
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -63,35 +60,38 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 					return FMath::IsNearlyEqual(GrowingCurve->FloatCurve.GetKeyTime(Key), Time, KEY_TIME_TOLERANCE);
 				};
 
+				const auto ScaleUpPumpkin = [this](EGrowingStage NextStage, float Time)
+				{
+					FVector* InitialScale = StageSizes.Find(Stage);
+					FVector* TargetScale = StageSizes.Find(NextStage);
+					checkf(TargetScale, TEXT("EGrowingState::None was used, it must never be used to inidicate growing state."));
+					const FVector CurrentScale = FMath::Lerp(*InitialScale, *TargetScale, Time);
+
+					SetActorScale3D(CurrentScale);
+				};
+
 				if (Stage == EGrowingStage::Small)
 				{
 					const FKeyHandle FirstKey = GrowingCurve->FloatCurve.GetFirstKeyHandle();
 					const FKeyHandle SecondKey = GrowingCurve->FloatCurve.GetNextKey(FirstKey);
 
-					const FVector* TargetScale = StageSizes.Find(EGrowingStage::Medium);
-					checkf(TargetScale, TEXT("EGrowingState::None was used, it must never be used to inidicate growing state."));
-					const FVector CurrentScale = FMath::Lerp(InitialScale3D, *TargetScale, GrowAlpha);
-
-					SetActorScale3D(CurrentScale);
+					ScaleUpPumpkin(EGrowingStage::Medium, GrowAlpha);
 
 					if (CheckKeyTime(SecondKey, GrowAlpha))
 					{
+						UE_LOG(LogTemp, Warning, TEXT("Medium reached, time: %f"), GrowAlpha);
+						CurrentGrowingTime = CurrentGrowingTime * GrowAlpha;
 						Stage = EGrowingStage::Medium;
 						OnGrowingStageReached.Broadcast(Stage);
 					}
 				}
 				else
 				{
-					const FKeyHandle ThirdKey = GrowingCurve->FloatCurve.GetLastKeyHandle();
+					ScaleUpPumpkin(EGrowingStage::Large, GrowAlpha);
 
-					const FVector* TargetScale = StageSizes.Find(EGrowingStage::Large);
-					checkf(TargetScale, TEXT("EGrowingState::None was used, it must never be used to inidicate growing state."));
-					const FVector CurrentScale = FMath::Lerp(InitialScale3D, *TargetScale, GrowAlpha);
-
-					SetActorScale3D(CurrentScale);
-
-					if (CheckKeyTime(ThirdKey, GrowAlpha))
+					if (StageSizes.Find(EGrowingStage::Large)->Equals(GetActorScale3D()))
 					{
+						UE_LOG(LogTemp, Warning, TEXT("Large reached, time: %f"), GrowAlpha);
 						Stage = EGrowingStage::Large;
 						OnGrowingStageReached.Broadcast(Stage);
 					}
@@ -142,11 +142,12 @@ void AGrowingPumpkin::PostEditChangeProperty(FPropertyChangedEvent& PropertyChan
 	const FName PropertyName = PropertyChangedEvent.GetMemberPropertyName();
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(AGrowingPumpkin, StageSizes))
 	{
-		PumpkinMesh->SetRelativeScale3D(*StageSizes.Find(EGrowingStage::Small));
+		SetActorScale3D((*StageSizes.Find(EGrowingStage::Small)));
 	}
-	else if (PropertyName == GET_MEMBER_NAME_CHECKED(AGrowingPumpkin, PumpkinMesh))
+	else if (PropertyName == FName(TEXT("RelativeScale3D")))
 	{
-		InitialScale3D = PumpkinMesh->GetRelativeScale3D();
+		const FVector NewRelativeScale = GetActorScale3D();
+		*StageSizes.Find(EGrowingStage::Small) = NewRelativeScale;
 	}
 }
 #endif

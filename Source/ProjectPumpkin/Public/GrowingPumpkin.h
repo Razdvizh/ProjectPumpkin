@@ -103,8 +103,6 @@ private:
 
 	float CurrentGrowingTime;
 
-	FVector InitialScale3D;
-
 	FTimerHandle StagePauseHandle;
 
 };
