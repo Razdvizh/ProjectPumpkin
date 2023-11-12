@@ -9,7 +9,7 @@
 class UStaticMeshComponent;
 class UActivationVolumeComponent;
 class AActor;
-class UCurveFloat;
+class UCurveVector;
 struct FPropertyChangedEvent;
 struct FTimerHande;
 
@@ -46,24 +46,19 @@ public:
 	FORCEINLINE float GetGrowingTime() const { return GrowingTime; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Growing Pumpkin")
-	FORCEINLINE UCurveFloat* GetGrowingCurve() const { return GrowingCurve; }
+	FORCEINLINE UCurveVector* GetGrowingCurve() const { return GrowingCurve; }
 
 	UFUNCTION(BlueprintGetter, Category = "Growing Pumpkin")
 	FORCEINLINE float GetPauseBetweenStages() const { return PauseBetweenStages; }
 
 	UFUNCTION(BlueprintCallable, Category = "Growing Pumpkin")
-	void SetGrowingCurve(UCurveFloat* Curve);
+	void SetGrowingCurve(UCurveVector* Curve);
 
 	UFUNCTION(BlueprintCallable, Category = "Growing Pumpkin")
 	void SetGrowingTime(float Time);
 
 	UFUNCTION(BlueprintCallable, Category = "Growing Pumpkin")
 	void SetPauseBetweenStages(float Time);
-
-	UFUNCTION(BlueprintCallable, Category = "Growing Pumpkin")
-	void SetSizeForStage(EGrowingStage InStage, const FVector& InSize);
-
-	FORCEINLINE const TMap<EGrowingStage, FVector> GetStageSizesMap() const { return StageSizes; }
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -87,10 +82,7 @@ protected:
 	UActivationVolumeComponent* ActivationVolume;
 
 	UPROPERTY(EditAnywhere, BlueprintSetter = SetGrowingCurve, Category = "Growing Pumpkin", meta = (ToolTip = "Growing rate ratio. Must have three keys for small, medium and large stages."))
-	UCurveFloat* GrowingCurve;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, NoClear, Category = "Growing Pumpkin", meta = (ToolTip = "Pumpkin size (scale) for each growing stage."))
-	TMap<EGrowingStage, FVector> StageSizes;
+	UCurveVector* GrowingCurve;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetGrowingTime, Category = "Growing Pumpkin", meta = (CampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Time that pumpkin takes to fully grow. Zero means that pumpkin will spawn fully grown."))
 	float GrowingTime;
