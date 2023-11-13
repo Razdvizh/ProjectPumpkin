@@ -86,6 +86,8 @@ private:
 
 	float CurrentGrowingTime;
 
+	FVector InitialCurveScale;
+
 	FTimerHandle StagePauseHandle;
 
 };

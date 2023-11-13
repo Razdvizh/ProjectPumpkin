@@ -5,6 +5,7 @@
 #include "ActivationVolumeComponent.h"
 #include "HealthComponent.h"
 #include "ProjectPumpkin/ProjectPumpkinCharacter.h"
+#include "ProjectPumpkin/ProjectPumpkin.h"
 #include "Curves/CurveVector.h"
 #include "Curves/RichCurve.h"
 #include "TimerManager.h"
@@ -23,7 +24,8 @@ AGrowingPumpkin::AGrowingPumpkin()
 	GrowingTime(5.f),
 	PauseBetweenStages(0.f),
 	Stage(EGrowingStage::Small),
-	CurrentGrowingTime(0.f)
+	CurrentGrowingTime(0.f),
+	InitialCurveScale(FVector::ZeroVector)
 {
 	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
 
@@ -47,6 +49,11 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 				
 			const FVector Scale = GrowingCurve->GetVectorValue(TimeRatio);
 			SetActorScale3D(Scale);
+
+			//Offset Z position after scaling up.
+			FVector ActorLocation = GetActorLocation();
+			ActorLocation += FVector(0.f, 0.f, InitialCurveScale.Z);
+			SetActorLocation(ActorLocation);
 
 			const FRichCurve FirstCurve = GrowingCurve->FloatCurves[0];
 			const FKeyHandle FirstKey = FirstCurve.GetFirstKeyHandle();
@@ -154,10 +161,25 @@ void AGrowingPumpkin::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (GrowingTime <= 0.f)
+	const FVector InitialScale = GrowingCurve->GetVectorValue(0.f);
+	const FVector LastScale = GrowingCurve->GetVectorValue(1.f);
+
+	if (ensureMsgf(!InitialScale.IsZero() && !LastScale.IsZero(), TEXT("Curve contains negative scale!")))
 	{
-		Stage = EGrowingStage::Large;
-		SetActorScale3D(GrowingCurve->GetVectorValue(1.f));
+		if (GrowingTime <= 0.f)
+		{
+			Stage = EGrowingStage::Large;
+			SetActorScale3D(LastScale);
+			return;
+		}
+
+		if (!InitialScale.Equals(GetActorScale3D()))
+		{
+			UE_LOG(LogProjectPumpkin, Warning, TEXT("Initial curve scale and actor scale are different, actor will be scaled to match the curve."));
+		}
+
+		InitialCurveScale = GrowingCurve->GetVectorValue(0.f);
+		SetActorScale3D(InitialScale);
 	}
 }
 
