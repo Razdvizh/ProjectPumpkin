@@ -157,9 +157,8 @@ void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)
 void AProjectPumpkinCharacter::Look()
 {
 	UCharacterMovementComponent* CharacterMovementComp = GetCharacterMovement();
-	const bool bIsMoving = CharacterMovementComp->Velocity.Length() > KINDA_SMALL_NUMBER;
 
-	if (Controller && !bIsMoving)
+	if (Controller)
 	{
 		FHitResult Hit;
 		APlayerController* PlayerController = StaticCast<APlayerController*, AController*>(Controller);
@@ -179,7 +178,8 @@ void AProjectPumpkinCharacter::Look()
 			CharacterMovementComp->MoveUpdatedComponent(FVector::ZeroVector, NewRotation, false);
 
 			const FRotator NewActorRotation = GetActorRotation() + LookOffset;
-			SetActorRotation(NewActorRotation);
+			const FRotator YawRotation = FRotator(0.f, NewActorRotation.Yaw, 0.f);
+			SetActorRotation(YawRotation);
 		}
 	}
 }

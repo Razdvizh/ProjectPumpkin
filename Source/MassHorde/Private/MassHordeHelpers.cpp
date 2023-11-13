@@ -9,7 +9,8 @@ void UMassHordeHelpers::DestroyMassAgent(UMassAgentComponent* MassAgent)
 {
 	const AActor* const Owner = MassAgent->GetOwner();
 
-	if (!UE::Mass::Utils::GetEntityManager(Owner->GetWorld())->IsProcessing() && !MassAgent->IsPuppetPendingInitialization())
+	const bool bIsSafeToKill = !UE::Mass::Utils::GetEntityManager(Owner->GetWorld())->IsProcessing() && !MassAgent->IsPuppetPendingInitialization();
+	if (bIsSafeToKill)
 	{
 		MassAgent->KillEntity(true);
 	}
