@@ -27,14 +27,6 @@ void AHordeSpawner::SetSpawnDelay(float Delay)
 	}
 }
 
-void AHordeSpawner::BeginPlay()
-{
-	ActivationVolume->OnVolumeActivated.AddUniqueDynamic(this, &AHordeSpawner::OnSpawnerActivate);
-	ActivationVolume->OnVolumeDeactivated.AddUniqueDynamic(this, &AHordeSpawner::OnSpawnerDeactivate);
-
-	Super::BeginPlay();
-}
-
 void AHordeSpawner::DoSpawningAsync()
 {
 	AsyncTask(ENamedThreads::GameThread, [this]()
@@ -43,12 +35,12 @@ void AHordeSpawner::DoSpawningAsync()
 	});
 }
 
-void AHordeSpawner::OnSpawnerActivate(AActor* Activator)
+void AHordeSpawner::OnVolumeActivated(AActor* Activator)
 {
 	GetWorld()->GetTimerManager().SetTimer(SpawnIntervalHandle, this, &AHordeSpawner::DoSpawningAsync, SpawnDelay, true);
 }
 
-void AHordeSpawner::OnSpawnerDeactivate(AActor* Activator)
+void AHordeSpawner::OnVolumeDeactivated(AActor* Activator)
 {
 	GetWorld()->GetTimerManager().ClearTimer(SpawnIntervalHandle);
 }

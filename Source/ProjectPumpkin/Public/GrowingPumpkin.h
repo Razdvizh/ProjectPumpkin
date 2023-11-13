@@ -3,12 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "ActivateableActor.h"
 #include "GrowingPumpkin.generated.h"
 
 class UStaticMeshComponent;
 class UActivationVolumeComponent;
-class AActor;
 class UCurveVector;
 struct FPropertyChangedEvent;
 struct FTimerHande;
@@ -26,7 +25,7 @@ ENUM_RANGE_BY_FIRST_AND_LAST(EGrowingStage, EGrowingStage::Small, EGrowingStage:
 DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam(FOnGrowingStageReachedSignature, AGrowingPumpkin, OnGrowingStageReached, EGrowingStage, StageReached);
 
 UCLASS()
-class PROJECTPUMPKIN_API AGrowingPumpkin : public AActor
+class PROJECTPUMPKIN_API AGrowingPumpkin : public AActivateableActor
 {
 	GENERATED_BODY()
 	
@@ -38,9 +37,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Growing Pumpkin")
 	FOnGrowingStageReachedSignature OnGrowingStageReached;
-	
-	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Growing Pumpkin")
-	FORCEINLINE UStaticMeshComponent* GetPumpkinMesh() const {return PumpkinMesh; }
 
 	UFUNCTION(BlueprintGetter, Category = "Growing Pumpkin")
 	FORCEINLINE float GetGrowingTime() const { return GrowingTime; }
@@ -71,16 +67,11 @@ protected:
 	UFUNCTION()
 	virtual void OnStageReached(EGrowingStage GrowingStage);
 
-	UFUNCTION()
-	virtual void OnPumpkinActivated(AActor* Activator);
+	virtual void OnVolumeActivated(AActor* Activator);
+
+	virtual void OnVolumeDeactivated(AActor* Activator);
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Growing Pumpkin", meta = (DisplayName = "Pumpkin", ToolTip = "Pumpkin mesh to grow. Mesh scale on begin play must be equal to the scale specified in StageSizes."))
-	UStaticMeshComponent* PumpkinMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Growing Pumpkin")
-	UActivationVolumeComponent* ActivationVolume;
-
 	UPROPERTY(EditAnywhere, BlueprintSetter = SetGrowingCurve, Category = "Growing Pumpkin", meta = (ToolTip = "Growing rate ratio. Must have three keys for small, medium and large stages."))
 	UCurveVector* GrowingCurve;
 

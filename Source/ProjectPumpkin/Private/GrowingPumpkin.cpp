@@ -21,22 +21,17 @@ constexpr float LARGE_HEAL = 2.f;
 AGrowingPumpkin::AGrowingPumpkin()
 	: GrowingCurve(),
 	GrowingTime(5.f),
+	PauseBetweenStages(0.f),
 	Stage(EGrowingStage::Small),
 	CurrentGrowingTime(0.f)
 {
-	PumpkinMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Pumpkin"));
-	RootComponent = PumpkinMesh;
-
-	PumpkinMesh->SetGenerateOverlapEvents(false);
-
-	ActivationVolume = CreateDefaultSubobject<UActivationVolumeComponent>(TEXT("ActivationVolume"));
-	ActivationVolume->SetupAttachment(RootComponent);
-
 	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	PumpkinMesh->PrimaryComponentTick.bCanEverTick = false;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	Mesh->PrimaryComponentTick.bCanEverTick = false;
+	ActivationVolume->PrimaryComponentTick.bCanEverTick = false;
 }
 
 void AGrowingPumpkin::Tick(float DeltaTime)
@@ -53,7 +48,11 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 			const FVector Scale = GrowingCurve->GetVectorValue(TimeRatio);
 			SetActorScale3D(Scale);
 
-			if (GrowingCurve->FloatCurves[0].KeyExistsAtTime(TimeRatio))
+			const FRichCurve FirstCurve = GrowingCurve->FloatCurves[0];
+			const FKeyHandle FirstKey = FirstCurve.GetFirstKeyHandle();
+			const bool bKeyExists = FirstCurve.KeyExistsAtTime(TimeRatio);
+			const bool bIsFirstKey = FirstKey == FirstCurve.FindKey(TimeRatio);
+			if (bKeyExists && !bIsFirstKey)
 			{
 				switch (Stage)
 				{
@@ -61,12 +60,13 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 					checkf(false, TEXT("EGrowingStage::None was used. It should never be used to indicate growing state."));
 					break;
 				case EGrowingStage::Small:
-					break;
-				case EGrowingStage::Medium:
 					Stage = EGrowingStage::Medium;
 					break;
-				case EGrowingStage::Large:
+				case EGrowingStage::Medium:
 					Stage = EGrowingStage::Large;
+					break;
+				case EGrowingStage::Large:
+					CurrentGrowingTime = GrowingTime + SMALL_NUMBER; //Should never reach, but if it happens disable the tick as there is no need to grow further
 					break;
 				default:
 					check(false);
@@ -123,7 +123,8 @@ void AGrowingPumpkin::PostEditChangeProperty(FPropertyChangedEvent& PropertyChan
 	const FName PropertyName = PropertyChangedEvent.GetMemberPropertyName();
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(AGrowingPumpkin, GrowingCurve))
 	{
-		for (int32 i = 0; i < 3; i++)
+		int32 i;
+		for (i = 0; i < 3; i++)
 		{
 			const FRichCurve FloatCurve = GrowingCurve->FloatCurves[i];
 			if (FloatCurve.GetNumKeys() != NUM_STAGES)
@@ -132,14 +133,14 @@ void AGrowingPumpkin::PostEditChangeProperty(FPropertyChangedEvent& PropertyChan
 				FNotificationInfo Info(FText::FromString(Message));
 				Info.FadeInDuration = 0.1f;
 				Info.FadeOutDuration = 0.5f;
-				Info.ExpireDuration = 5.f;
+				Info.ExpireDuration = 3.f;
 				Info.bUseThrobber = false;
 				Info.bUseSuccessFailIcons = true;
 				Info.bUseLargeFont = true;
 				Info.bFireAndForget = false;
-				Info.bAllowThrottleWhenFrameRateIsLow = false;
+				Info.bAllowThrottleWhenFrameRateIsLow = true;
 				TSharedPtr<SNotificationItem> NotificationItem = FSlateNotificationManager::Get().AddNotification(Info);
-				NotificationItem->SetCompletionState(SNotificationItem::CS_None);
+				NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
 				NotificationItem->ExpireAndFadeout();
 				return;
 			}
@@ -151,9 +152,6 @@ void AGrowingPumpkin::PostEditChangeProperty(FPropertyChangedEvent& PropertyChan
 // Called when the game starts or when spawned
 void AGrowingPumpkin::BeginPlay()
 {
-	OnGrowingStageReached.AddUniqueDynamic(this, &AGrowingPumpkin::OnStageReached);
-	ActivationVolume->OnVolumeActivated.AddUniqueDynamic(this, &AGrowingPumpkin::OnPumpkinActivated);
-
 	Super::BeginPlay();
 	
 	if (GrowingTime <= 0.f)
@@ -168,7 +166,7 @@ void AGrowingPumpkin::OnStageReached(EGrowingStage GrowingStage)
 	GetWorld()->GetTimerManager().SetTimer(StagePauseHandle, PauseBetweenStages, false);
 }
 
-void AGrowingPumpkin::OnPumpkinActivated(AActor* Activator)
+void AGrowingPumpkin::OnVolumeActivated(AActor* Activator)
 {
 	if (AProjectPumpkinCharacter* Character = Cast<AProjectPumpkinCharacter>(Activator))
 	{
@@ -188,4 +186,9 @@ void AGrowingPumpkin::OnPumpkinActivated(AActor* Activator)
 			check(false);
 		}
 	}
+}
+
+void AGrowingPumpkin::OnVolumeDeactivated(AActor* Activator)
+{
+	//No op
 }

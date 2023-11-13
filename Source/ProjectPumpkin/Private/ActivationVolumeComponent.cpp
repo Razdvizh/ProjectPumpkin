@@ -2,6 +2,7 @@
 
 #include "ActivationVolumeComponent.h"
 #include "GameFramework/Actor.h"
+#include "Activateable.h"
 #include "ProjectPumpkin/ProjectPumpkin.h"
 
 UActivationVolumeComponent::UActivationVolumeComponent(const FObjectInitializer& ObjectInitializer) 
@@ -15,6 +16,14 @@ void UActivationVolumeComponent::BeginPlay()
 {
 	OnComponentBeginOverlap.AddUniqueDynamic(this, &UActivationVolumeComponent::OnBeginOverlap);
 	OnComponentEndOverlap.AddUniqueDynamic(this, &UActivationVolumeComponent::OnEndOverlap);
+
+	AActor* Owner = GetOwner();
+	if (Owner->Implements<UActivateable>())
+	{
+		IActivateable* AsActivateable = Cast<IActivateable>(Owner);
+		OnVolumeActivated.AddUniqueDynamic(AsActivateable, &IActivateable::OnVolumeActivated);
+		OnVolumeDeactivated.AddUniqueDynamic(AsActivateable, &IActivateable::OnVolumeDeactivated);
+	}
 
 	Super::BeginPlay();
 }
