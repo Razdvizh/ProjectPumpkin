@@ -42,7 +42,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mass", meta = (ToolTip = "Area that activates the spawner. Check Activators to specify who can trigger spawning."))
 	UActivationVolumeComponent* ActivationVolume;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetSpawnDelay, Category = "Mass", meta = (Units = "s", ClampMin = 0.1f, UIMin = 0.1f, ToolTip = "Delay between spawn intervals of the entities."))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetSpawnDelay, BlueprintSetter = SetSpawnDelay, Category = "Mass", meta = (Units = "s", ClampMin = 0.1f, UIMin = 0.1f, ToolTip = "Delay between spawn intervals of the entities."))
 	float SpawnDelay;
 
 private:

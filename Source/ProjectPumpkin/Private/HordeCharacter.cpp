@@ -21,12 +21,13 @@
 #include "DamageInfo.h"
 #include "Kismet/GameplayStatics.h"
 #include "MassEntityManager.h"
+#include "ProjectPumpkin/ProjectPumpkin.h"
 #pragma endregion Misc
 
 // Sets default values
 AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer) 
 	: Super(ObjectInitializer.DoNotCreateDefaultSubobject(ACharacter::MeshComponentName)),
-	PushbackDisplacement(-250.f),
+	LaunchDisplacement(-250.f),
 	LaunchBoost(1.f),
 	Arc(0.25f)
 {
@@ -48,14 +49,8 @@ void AHordeCharacter::Interact_Implementation(AActor* Initiator)
 	if (Initiator->IsA<AProjectPumpkinCharacter>())
 	{
 		AProjectPumpkinCharacter* PumpkinCharacter = static_cast<AProjectPumpkinCharacter*>(Initiator);
-		FVector LaunchVelocity;
-		const FVector StartPosition = GetActorLocation();
-		const FVector EndPosition = (GetActorForwardVector() * PushbackDisplacement) + StartPosition;
 
-		UGameplayStatics::SuggestProjectileVelocity_CustomArc(GetWorld(), LaunchVelocity, StartPosition, EndPosition, /*OverrideGravityZ=*/0.f, Arc);
-
-		LaunchVelocity = LaunchVelocity * LaunchBoost;
-		LaunchCharacter(LaunchVelocity, true, true);
+		LaunchCharacter_CustomArc(LaunchDisplacement, LaunchBoost, /*OverrideGravityZ=*/0.f, Arc);
 
 		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, PumpkinCharacter->GetController(), PumpkinCharacter);
 	}
@@ -63,6 +58,37 @@ void AHordeCharacter::Interact_Implementation(AActor* Initiator)
 	{
 		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigatorController(), Initiator);
 	}
+}
+
+void AHordeCharacter::LaunchCharacter_CustomArc(float InLaunchDisplacement, float InLaunchBoost, float InOverrideGravityZ, float InArc)
+{
+	FVector LaunchVelocity;
+	const FVector StartPosition = GetActorLocation();
+	const FVector EndPosition = (GetActorForwardVector() * InLaunchDisplacement) + StartPosition;
+
+	UGameplayStatics::SuggestProjectileVelocity_CustomArc(GetWorld(), LaunchVelocity, StartPosition, EndPosition, InOverrideGravityZ, InArc);
+
+	LaunchVelocity = LaunchVelocity * InLaunchBoost;
+	LaunchCharacter(LaunchVelocity, true, true);
+}
+
+void AHordeCharacter::SetLaunchDisplacement(float Displacement)
+{
+	LaunchDisplacement = Displacement;
+}
+
+void AHordeCharacter::SetLaunchBoost(float Boost)
+{
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Boost, FString::Printf(TEXT("Boost value: %f is negative! Character will use default boost value."), Boost));
+		
+	LaunchBoost = Boost;
+}
+
+void AHordeCharacter::SetArc(float InArc)
+{
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(InArc, FString::Printf(TEXT("Arc value: %f is negative! Character will use default arc value."), InArc));
+	
+	Arc = FMath::Clamp(InArc, 0.f, 1.f);
 }
 
 void AHordeCharacter::OnDemise()

@@ -11,7 +11,6 @@ class UStaticMeshComponent;
 class UMassAgentComponent;
 class UHealthComponent;
 class AController;
-class AActor;
 struct FDamageEvent;
 
 UCLASS()
@@ -21,21 +20,47 @@ class PROJECTPUMPKIN_API AHordeCharacter : public AMortalCharacter, public IInte
 
 public:
 	// Sets default values for this character's properties
-	AHordeCharacter(const FObjectInitializer& ObjectInitializer);
+	AHordeCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void Interact_Implementation(AActor* Initiator) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Horde|Character")
+	void LaunchCharacter_CustomArc(float InLaunchDisplacement, float InLaunchBoost, float InOverrideGravityZ = 0.f, float InArc = 0.5f);
+
+#pragma region Getters
+	UFUNCTION(BlueprintPure, Category = "Horde|Character")
+	FORCEINLINE float GetLaunchDisplacement() const { return LaunchDisplacement; }
+
+	UFUNCTION(BlueprintPure, Category = "Horde|Character")
+	FORCEINLINE float GetLaunchBoost() const { return LaunchBoost; }
+
+	UFUNCTION(BlueprintPure, Category = "Horde|Character")
+	FORCEINLINE float GetArc() const { return Arc; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Horde|Character")
+	FORCEINLINE UStaticMeshComponent* GetMesh() const { return CharacterMesh; } //ACharacter::GetMesh shadowing
+#pragma endregion Getters
+
+	UFUNCTION(BlueprintCallable, Category = "Horde|Character")
+	void SetLaunchDisplacement(float Displacement);
+
+	UFUNCTION(BlueprintCallable, Category = "Horde|Character")
+	void SetLaunchBoost(float Boost);
+
+	UFUNCTION(BlueprintCallable, Category = "Horde|Character")
+	void SetArc(float InArc);
 
 protected:
 	virtual void OnDemise() override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character", meta = (ToolTip = "How far and in what direction the character will be pushed. Zero is no pushback."))
-	float PushbackDisplacement;
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetLaunchDisplacement, BlueprintSetter = SetLaunchDisplacement, Category = "Horde|Character", meta = (ToolTip = "How far and in what direction the character will be launched. Zero is no pushback."))
+	float LaunchDisplacement;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character", meta = (ClampMin = 0.f, UIMin = 0.f, ToolTip = "Scale of the character pushback velocity."))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetLaunchBoost, BlueprintSetter = SetLaunchBoost, Category = "Horde|Character", meta = (ClampMin = 0.f, UIMin = 0.f, ToolTip = "Scale of the character pushback velocity."))
 	float LaunchBoost;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 1.f, UIMax = 1.f, ToolTip = "Arc that pushback should follow. Zero is up, one is straight forward or backward."))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetArc, BlueprintSetter = SetArc, Category = "Horde|Character", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 1.f, UIMax = 1.f, ToolTip = "Arc that pushback should follow. Zero is up, one is straight forward or backward."))
 	float Arc;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")

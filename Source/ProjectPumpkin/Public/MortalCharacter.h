@@ -17,7 +17,7 @@ class PROJECTPUMPKIN_API AMortalCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	AMortalCharacter(const FObjectInitializer& ObjectInitialier);
+	AMortalCharacter(const FObjectInitializer& ObjectInitialier = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Mortal Character")
 	FORCEINLINE UHealthComponent* GetHealthComponent() const { return Health; }

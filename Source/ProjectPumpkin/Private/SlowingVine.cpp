@@ -24,6 +24,11 @@ ASlowingVine::ASlowingVine()
 	ActivationVolume->PrimaryComponentTick.bCanEverTick = false;
 }
 
+void ASlowingVine::SetSpeedPenalty(float Penalty)
+{
+	SpeedPenalty = Penalty;
+}
+
 void ASlowingVine::OnVolumeActivated(AActor* Activator)
 {
 	ACharacter* Character = Cast<ACharacter>(Activator);

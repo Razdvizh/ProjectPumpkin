@@ -72,19 +72,21 @@ protected:
 	virtual void OnVolumeDeactivated(AActor* Activator);
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintSetter = SetGrowingCurve, Category = "Growing Pumpkin", meta = (ToolTip = "Growing rate ratio. Must have three keys for small, medium and large stages."))
+	UPROPERTY(EditAnywhere, BlueprintSetter = SetGrowingCurve, NoClear, Category = "Growing Pumpkin", meta = (ToolTip = "Growing rate ratio (First key time = 0, Last key time = 1). Must have three keys for small, medium and large stages."))
 	UCurveVector* GrowingCurve;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetGrowingTime, Category = "Growing Pumpkin", meta = (CampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Time that pumpkin takes to fully grow. Zero means that pumpkin will spawn fully grown."))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetGrowingTime, BlueprintSetter = SetGrowingTime, Category = "Growing Pumpkin", meta = (CampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Time that pumpkin takes to fully grow. Zero means that pumpkin will spawn fully grown."))
 	float GrowingTime;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetPauseBetweenStages, Category = "Growing Pumpkin", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "How long the pumpkin will stay at the stage before continuing growing. Zero means no pause."))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetPauseBetweenStages, BlueprintSetter = SetPauseBetweenStages, Category = "Growing Pumpkin", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "How long the pumpkin will stay at the stage before continuing growing. Zero means no pause."))
 	float PauseBetweenStages;
 
 private:
 	EGrowingStage Stage;
 
 	float CurrentGrowingTime;
+
+	bool bNeedsToTick;
 
 	FVector InitialCurveScale;
 

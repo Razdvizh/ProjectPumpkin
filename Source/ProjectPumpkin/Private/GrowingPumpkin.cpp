@@ -25,6 +25,7 @@ AGrowingPumpkin::AGrowingPumpkin()
 	PauseBetweenStages(0.f),
 	Stage(EGrowingStage::Small),
 	CurrentGrowingTime(0.f),
+	bNeedsToTick(false),
 	InitialCurveScale(FVector::ZeroVector)
 {
 	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
@@ -40,7 +41,7 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CurrentGrowingTime < GrowingTime)
+	if (CurrentGrowingTime < GrowingTime && bNeedsToTick)
 	{
 		if (!GetWorld()->GetTimerManager().IsTimerActive(StagePauseHandle))
 		{
@@ -85,7 +86,7 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 	}
 	else
 	{
-		SetActorTickEnabled(false);
+		bNeedsToTick = false;
 	}
 }
 
@@ -108,18 +109,16 @@ void AGrowingPumpkin::SetGrowingCurve(UCurveVector* Curve)
 
 void AGrowingPumpkin::SetGrowingTime(float Time)
 {
-	if (ensureMsgf(!FMath::IsNegativeOrNegativeZero(Time), TEXT("Time value: %f is negative! Pumpkin will use default growing time."), Time))
-	{
-		GrowingTime = Time;
-	}
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Time, FString::Printf(TEXT("Time value: %f is negative! Pumpkin will use default growing time."), Time));
+
+	GrowingTime = Time;
 }
 
 void AGrowingPumpkin::SetPauseBetweenStages(float Time)
 {
-	if (ensureMsgf(!FMath::IsNegativeOrNegativeZero(Time), TEXT("Time value: %f is negative! Pumpkin will use default pause time."), Time))
-	{
-		PauseBetweenStages = Time;
-	}
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Time, FString::Printf(TEXT("Time value: %f is negative! Pumpkin will use default pause time."), Time));
+		
+	PauseBetweenStages = Time;
 }
 
 #if WITH_EDITOR
@@ -180,6 +179,8 @@ void AGrowingPumpkin::BeginPlay()
 
 		InitialCurveScale = GrowingCurve->GetVectorValue(0.f);
 		SetActorScale3D(InitialScale);
+
+		bNeedsToTick = true;
 	}
 }
 

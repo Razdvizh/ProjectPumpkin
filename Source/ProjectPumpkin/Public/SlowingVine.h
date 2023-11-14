@@ -22,13 +22,16 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Vine")
 	FORCEINLINE float GetSpeedPenalty() const { return SpeedPenalty; }
 
+	UFUNCTION(BlueprintCallable, Category = "Vine")
+	FORCEINLINE void SetSpeedPenalty(float Penalty);
+
 protected:
 	virtual void OnVolumeActivated(AActor* Activator) override;
 
 	virtual void OnVolumeDeactivated(AActor* Activator) override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetSpeedPenalty, Category = "Vine", meta = (ClampMin = 0, UIMin = 0, ForceUnits = "cm/s", ToolTip = "The amount by which the character will be slowed down. Be careful with small numbers as character might not be able to escape!"))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetSpeedPenalty, BlueprintSetter = SetSpeedPenalty, Category = "Vine", meta = (ClampMin = 0.f, UIMin = 0.f, ForceUnits = "cm/s", ToolTip = "The amount by which the character will be slowed down. Be careful with small numbers as character might not be able to escape!"))
 	float SpeedPenalty;
 
 private:
