@@ -46,10 +46,12 @@ protected:
 
 	void Shoot();
 
-#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 private:
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 	void DrawCursorHitLocation(const FVector& HitLocation);
 #endif
+
+	void OnLookCompleted();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (ToolTip = "Offset for character rotation during look towards the mouse cursor."))
@@ -81,5 +83,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
 	UInputAction* ShootAction;
+
+	bool bIsLooking;
 
 };

@@ -47,7 +47,8 @@ static TAutoConsoleVariable<bool> CVarDebugMouseHit(
 AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer),
 	  LookOffset(0.f, 180.f, 0.f),
-	  ProjectileClass(AProjectile::StaticClass())
+	  ProjectileClass(AProjectile::StaticClass()),
+	  bIsLooking(false)
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -122,6 +123,8 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AProjectPumpkinCharacter::Look);
 
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Completed, this, &AProjectPumpkinCharacter::OnLookCompleted);
+
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AProjectPumpkinCharacter::Shoot);
 	}
 }
@@ -142,6 +145,11 @@ void AProjectPumpkinCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor,
 void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	if (!bIsLooking)
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
 
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -164,6 +172,7 @@ void AProjectPumpkinCharacter::Look()
 		APlayerController* PlayerController = StaticCast<APlayerController*, AController*>(Controller);
 		if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Mouse, false, Hit))
 		{
+			bIsLooking = true;
 			const FVector MousePosition = FVector(Hit.ImpactPoint.X, Hit.ImpactPoint.Y, 0.f);
 			#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 			if (CVarDebugMouseHit.GetValueOnGameThread())
@@ -175,6 +184,7 @@ void AProjectPumpkinCharacter::Look()
 			const FQuat DeltaRotation = CharacterMovementComp->GetDeltaRotation(GetWorld()->DeltaTimeSeconds).Quaternion();
 			const FQuat NewRotation = TargetRotation * DeltaRotation;
 
+			CharacterMovementComp->bOrientRotationToMovement = false;
 			CharacterMovementComp->MoveUpdatedComponent(FVector::ZeroVector, NewRotation, false);
 
 			const FRotator NewActorRotation = GetActorRotation() + LookOffset;
@@ -206,3 +216,8 @@ void AProjectPumpkinCharacter::DrawCursorHitLocation(const FVector& HitLocation)
 	DrawDebugPoint(GetWorld(), HitLocation, /*Size=*/3.f, FColor::Red, false, /*LifeTime=*/2.f);
 }
 #endif
+
+void AProjectPumpkinCharacter::OnLookCompleted()
+{
+	bIsLooking = false;
+}
