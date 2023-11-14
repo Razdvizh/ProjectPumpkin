@@ -29,7 +29,7 @@ public:
 
 #pragma region Getters
 	UFUNCTION(BlueprintPure, Category = "Horde|Character")
-	FORCEINLINE float GetLaunchDisplacement() const { return LaunchDisplacement; }
+	FORCEINLINE float GetLaunchDistance() const { return LaunchDistance; }
 
 	UFUNCTION(BlueprintPure, Category = "Horde|Character")
 	FORCEINLINE float GetLaunchBoost() const { return LaunchBoost; }
@@ -42,7 +42,7 @@ public:
 #pragma endregion Getters
 
 	UFUNCTION(BlueprintCallable, Category = "Horde|Character")
-	void SetLaunchDisplacement(float Displacement);
+	void SetLaunchDistance(float Displacement);
 
 	UFUNCTION(BlueprintCallable, Category = "Horde|Character")
 	void SetLaunchBoost(float Boost);
@@ -53,9 +53,14 @@ public:
 protected:
 	virtual void OnDemise() override;
 
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
 protected:
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetLaunchDisplacement, BlueprintSetter = SetLaunchDisplacement, Category = "Horde|Character", meta = (ToolTip = "How far and in what direction the character will be launched. Zero is no pushback."))
-	float LaunchDisplacement;
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetLaunchDistance, BlueprintSetter = SetLaunchDistance, Category = "Horde|Character", meta = (ToolTip = "How far the character will be launched. Zero means no launch."))
+	float LaunchDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetLaunchBoost, BlueprintSetter = SetLaunchBoost, Category = "Horde|Character", meta = (ClampMin = 0.f, UIMin = 0.f, ToolTip = "Scale of the character pushback velocity."))
 	float LaunchBoost;

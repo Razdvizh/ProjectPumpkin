@@ -38,7 +38,7 @@ protected:
 	virtual void OnDemise() override;
 
 	UFUNCTION()
-	void OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+	virtual void OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
 	void Move(const FInputActionValue& Value);
 

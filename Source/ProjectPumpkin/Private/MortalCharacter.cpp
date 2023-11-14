@@ -7,8 +7,7 @@
 
 // Sets default values
 AMortalCharacter::AMortalCharacter(const FObjectInitializer& ObjectInitialier) 
-	: Super(ObjectInitialier),
-	DamageInfo(FDamageEvent(), 1.f)
+	: Super(ObjectInitialier)
 {
 	Health = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
 	

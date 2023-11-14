@@ -82,6 +82,9 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& Obj
 
 	MassAgent = CreateDefaultSubobject<UMassAgentComponent>(TEXT("MassAgent"));
 
+	FDamageInfo Info{ FDamageEvent(), 1.f };
+	DamageInfoMap.Add(AHordeCharacter::StaticClass(), Info);
+
 	PrimaryActorTick.bCanEverTick = false;
 	CameraBoom->PrimaryComponentTick.bCanEverTick = false;
 	TopDownCameraComponent->PrimaryComponentTick.bCanEverTick = false;
@@ -90,10 +93,8 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& Obj
 
 void AProjectPumpkinCharacter::Interact_Implementation(AActor* Initiator)
 {
-	if (Initiator->IsA<AHordeCharacter>())
-	{
-		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigatorController(), Initiator);
-	}
+	const FDamageInfo& DamageInfo = *DamageInfoMap.Find(Initiator->GetClass());
+	TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigatorController(), Initiator);
 }
 
 void AProjectPumpkinCharacter::BeginPlay()

@@ -19,6 +19,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void Interact_Implementation(AActor* Initiator) override;
+
 	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
 	FORCEINLINE float GetJumpDelay() const { return JumpDelay; }
 
@@ -43,6 +45,8 @@ protected:
 
 private:
 	bool bNeedsToTick;
+
+	USphereComponent* ExpandingSphere;
 
 	FTimerHandle JumpIntervalHandle;
 

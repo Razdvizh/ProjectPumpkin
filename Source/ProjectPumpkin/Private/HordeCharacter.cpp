@@ -27,7 +27,7 @@
 // Sets default values
 AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer) 
 	: Super(ObjectInitializer.DoNotCreateDefaultSubobject(ACharacter::MeshComponentName)),
-	LaunchDisplacement(-250.f),
+	LaunchDistance(-250.f),
 	LaunchBoost(1.f),
 	Arc(0.25f)
 {
@@ -38,6 +38,9 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 
 	Health->SetMaxHealth(4.f);
 	Health->SetLethalHealth(0.f);
+
+	FDamageInfo Info{ FDamageEvent(), 1.f };
+	DamageInfoMap.Add(AProjectPumpkinCharacter::StaticClass(), Info);
 
 	PrimaryActorTick.bCanEverTick = false;
 	CharacterMesh->PrimaryComponentTick.bCanEverTick = false;
@@ -50,12 +53,14 @@ void AHordeCharacter::Interact_Implementation(AActor* Initiator)
 	{
 		AProjectPumpkinCharacter* PumpkinCharacter = static_cast<AProjectPumpkinCharacter*>(Initiator);
 
-		LaunchCharacter_CustomArc(LaunchDisplacement, LaunchBoost, /*OverrideGravityZ=*/0.f, Arc);
+		LaunchCharacter_CustomArc(LaunchDistance, LaunchBoost, /*OverrideGravityZ=*/0.f, Arc);
 
+		const FDamageInfo& DamageInfo = *DamageInfoMap.Find(Initiator->GetClass());
 		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, PumpkinCharacter->GetController(), PumpkinCharacter);
 	}
 	else if (Initiator->IsA<AProjectile>())
 	{
+		const FDamageInfo& DamageInfo = *DamageInfoMap.Find(Initiator->GetClass());
 		TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigatorController(), Initiator);
 	}
 }
@@ -72,9 +77,9 @@ void AHordeCharacter::LaunchCharacter_CustomArc(float InLaunchDisplacement, floa
 	LaunchCharacter(LaunchVelocity, true, true);
 }
 
-void AHordeCharacter::SetLaunchDisplacement(float Displacement)
+void AHordeCharacter::SetLaunchDistance(float Displacement)
 {
-	LaunchDisplacement = Displacement;
+	LaunchDistance = Displacement;
 }
 
 void AHordeCharacter::SetLaunchBoost(float Boost)
@@ -94,4 +99,19 @@ void AHordeCharacter::SetArc(float InArc)
 void AHordeCharacter::OnDemise()
 {
 	UMassHordeHelpers::DestroyMassAgent(MassAgent);
+}
+
+void AHordeCharacter::BeginPlay()
+{
+	AActor::OnActorHit.AddUniqueDynamic(this, &AHordeCharacter::OnActorHit);
+
+	Super::BeginPlay();
+}
+
+void AHordeCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor->Implements<UInteractable>())
+	{
+		IInteractable::Execute_Interact(OtherActor, this);
+	}
 }

@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "DamageInfo.h"
+#include "Templates/SubclassOf.h"
 #include "MortalCharacter.generated.h"
 
 class UHealthComponent;
+class AActor;
 struct FDamageEvent;
 
 UCLASS()
@@ -22,8 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Mortal Character")
 	FORCEINLINE UHealthComponent* GetHealthComponent() const { return Health; }
 
-	UFUNCTION(BlueprintCallable, Category = "Mortal Character")
-	FORCEINLINE FDamageInfo GetDamageInfo() const { return DamageInfo; }
+	FORCEINLINE const TMap<TSubclassOf<AActor>, FDamageInfo>& GetDamageInfoMap() const { return DamageInfoMap; }
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -37,7 +38,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	UHealthComponent* Health;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
-	FDamageInfo DamageInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (ToolTip = "Map of actors and damage info that they should receive. Can be left empty in cases where character doesn't deal damage to others. Damage is forwarded to Health Component."))
+	TMap<TSubclassOf<AActor>, FDamageInfo> DamageInfoMap;
 
 };
