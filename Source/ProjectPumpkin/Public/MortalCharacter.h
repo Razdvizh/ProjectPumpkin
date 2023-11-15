@@ -38,7 +38,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	UHealthComponent* Health;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (ToolTip = "Map of actors and damage info that they should receive. Can be left empty in cases where character doesn't deal damage to others. Damage is forwarded to Health Component."))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health", meta = (ToolTip = "Map of actors and damage info that they deal to this character. Can be left empty if the character is immortal. Damage is forwarded to Health Component."))
 	TMap<TSubclassOf<AActor>, FDamageInfo> DamageInfoMap;
 
 };

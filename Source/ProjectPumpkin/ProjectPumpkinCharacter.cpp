@@ -14,6 +14,7 @@
 #include "MassHordeHelpers.h"
 #include "Interactable.h"
 #include "HordeCharacter.h"
+#include "HordeBoss.h"
 #include "Projectile.h"
 #pragma endregion Gameplay
 #pragma region Input
@@ -84,6 +85,8 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& Obj
 
 	FDamageInfo Info{ FDamageEvent(), 1.f };
 	DamageInfoMap.Add(AHordeCharacter::StaticClass(), Info);
+	Info.DamageAmount = 2.f;
+	DamageInfoMap.Add(AHordeBoss::StaticClass(), Info);
 
 	PrimaryActorTick.bCanEverTick = false;
 	CameraBoom->PrimaryComponentTick.bCanEverTick = false;
@@ -93,8 +96,11 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& Obj
 
 void AProjectPumpkinCharacter::Interact_Implementation(AActor* Initiator)
 {
-	const FDamageInfo& DamageInfo = *DamageInfoMap.Find(Initiator->GetClass());
-	TakeDamage(DamageInfo.DamageAmount, DamageInfo.DamageEvent, Initiator->GetInstigatorController(), Initiator);
+	const FDamageInfo* DamageInfo = DamageInfoMap.Find(Initiator->GetClass());
+	if (DamageInfo)
+	{
+		TakeDamage((*DamageInfo).DamageAmount, (*DamageInfo).DamageEvent, Initiator->GetInstigatorController(), Initiator);
+	}
 }
 
 void AProjectPumpkinCharacter::BeginPlay()
@@ -125,6 +131,7 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AProjectPumpkinCharacter::Look);
 
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Completed, this, &AProjectPumpkinCharacter::OnLookCompleted);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Canceled, this, &AProjectPumpkinCharacter::OnLookCompleted);
 
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AProjectPumpkinCharacter::Shoot);
 	}
@@ -132,7 +139,7 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 
 void AProjectPumpkinCharacter::OnDemise()
 {
-	UMassHordeHelpers::DestroyMassAgent(MassAgent);
+	Destroy();
 }
 
 void AProjectPumpkinCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)

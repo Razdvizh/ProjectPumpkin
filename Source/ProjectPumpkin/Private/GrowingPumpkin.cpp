@@ -17,6 +17,7 @@
 constexpr int32 NUM_STAGES = 3;
 constexpr float MEDIUM_HEAL = 1.f;
 constexpr float LARGE_HEAL = 2.f;
+constexpr float KEY_TIME_TOLERANCE = 1.999999e-3f;
 
 // Sets default values
 AGrowingPumpkin::AGrowingPumpkin()
@@ -58,8 +59,8 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 
 			const FRichCurve FirstCurve = GrowingCurve->FloatCurves[0];
 			const FKeyHandle FirstKey = FirstCurve.GetFirstKeyHandle();
-			const bool bKeyExists = FirstCurve.KeyExistsAtTime(TimeRatio);
-			const bool bIsFirstKey = FirstKey == FirstCurve.FindKey(TimeRatio);
+			const bool bKeyExists = FirstCurve.KeyExistsAtTime(TimeRatio, KEY_TIME_TOLERANCE);
+			const bool bIsFirstKey = FirstKey == FirstCurve.FindKey(TimeRatio, KEY_TIME_TOLERANCE);
 			if (bKeyExists && !bIsFirstKey)
 			{
 				switch (Stage)
@@ -74,12 +75,16 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 					Stage = EGrowingStage::Large;
 					break;
 				case EGrowingStage::Large:
-					CurrentGrowingTime = GrowingTime + SMALL_NUMBER; //Should never reach, but if it happens disable the tick as there is no need to grow further
+					//CurrentGrowingTime = GrowingTime + SMALL_NUMBER; //Should never reach, but if it happens disable the tick as there is no need to grow further
 					break;
 				default:
 					check(false);
 				}
 
+				OnGrowingStageReached.Broadcast(Stage);
+			}
+			else if (bIsFirstKey)
+			{
 				OnGrowingStageReached.Broadcast(Stage);
 			}
 		}
@@ -158,6 +163,8 @@ void AGrowingPumpkin::PostEditChangeProperty(FPropertyChangedEvent& PropertyChan
 // Called when the game starts or when spawned
 void AGrowingPumpkin::BeginPlay()
 {
+	OnGrowingStageReached.AddUniqueDynamic(this, &AGrowingPumpkin::OnStageReached);
+
 	Super::BeginPlay();
 	
 	const FVector InitialScale = GrowingCurve->GetVectorValue(0.f);
@@ -186,6 +193,13 @@ void AGrowingPumpkin::BeginPlay()
 
 void AGrowingPumpkin::OnStageReached(EGrowingStage GrowingStage)
 {
+	if (GrowingStage == EGrowingStage::Large)
+	{
+		SetActorScale3D(InitialCurveScale);
+		bNeedsToTick = true;
+		CurrentGrowingTime = 0.f;
+		SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, 10.f));
+	}
 	GetWorld()->GetTimerManager().SetTimer(StagePauseHandle, PauseBetweenStages, false);
 }
 

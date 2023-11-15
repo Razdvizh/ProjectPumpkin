@@ -44,15 +44,21 @@ void UChasePlayerProcessor::Execute(FMassEntityManager& EntityManager, FMassExec
 			const FTransform& Transform = Transforms[EntityIndex].GetTransform();
 			FMassMoveTargetFragment& MoveTarget = MoveTargets[EntityIndex];
 
+			FVector TargetLocation = FVector();
 			if (AActor* Player = UGameplayStatics::GetActorOfClass(Context.GetWorld(), PlayerFragment.PlayerClass))
 			{
-				const FVector PlayerLocation = Player->GetActorLocation();
-				MoveTarget.Center = PlayerLocation;
-				MoveTarget.DistanceToGoal = (MoveTarget.Center - Transform.GetLocation()).Size();
-				MoveTarget.Forward = (MoveTarget.Center - Transform.GetLocation()).GetSafeNormal();
-				MoveTarget.DesiredSpeed = FMassInt16Real(MovementParams.DefaultDesiredSpeed);
-				MoveTarget.IntentAtGoal = EMassMovementAction::Stand;
+				TargetLocation = Player->GetActorLocation();
 			}
+			else
+			{
+				TargetLocation = (Transform.GetLocation() + FMath::RandRange(100.f, 500.f));
+			}
+
+			MoveTarget.Center = TargetLocation;
+			MoveTarget.DistanceToGoal = (MoveTarget.Center - Transform.GetLocation()).Size();
+			MoveTarget.Forward = (MoveTarget.Center - Transform.GetLocation()).GetSafeNormal();
+			MoveTarget.DesiredSpeed = FMassInt16Real(MovementParams.DefaultDesiredSpeed);
+			MoveTarget.IntentAtGoal = EMassMovementAction::Stand;
 		}
 	});
 }

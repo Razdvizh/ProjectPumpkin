@@ -25,7 +25,7 @@ public:
 	virtual void Interact_Implementation(AActor* Initiator) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Horde|Character")
-	void LaunchCharacter_CustomArc(float InLaunchDisplacement, float InLaunchBoost, float InOverrideGravityZ = 0.f, float InArc = 0.5f);
+	FVector GetLaunchVelocity_CustomArc(float InLaunchDisplacement, float InLaunchBoost, float InOverrideGravityZ = 0.f, float InArc = 0.5f);
 
 #pragma region Getters
 	UFUNCTION(BlueprintPure, Category = "Horde|Character")
@@ -62,10 +62,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetLaunchDistance, BlueprintSetter = SetLaunchDistance, Category = "Horde|Character", meta = (ToolTip = "How far the character will be launched. Zero means no launch."))
 	float LaunchDistance;
 
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetLaunchBoost, BlueprintSetter = SetLaunchBoost, Category = "Horde|Character", meta = (ClampMin = 0.f, UIMin = 0.f, ToolTip = "Scale of the character pushback velocity."))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetLaunchBoost, BlueprintSetter = SetLaunchBoost, Category = "Horde|Character", meta = (ClampMin = 0.f, UIMin = 0.f, ToolTip = "Scale of the character launch velocity."))
 	float LaunchBoost;
 
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetArc, BlueprintSetter = SetArc, Category = "Horde|Character", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 1.f, UIMax = 1.f, ToolTip = "Arc that pushback should follow. Zero is up, one is straight forward or backward."))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetArc, BlueprintSetter = SetArc, Category = "Horde|Character", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 1.f, UIMax = 1.f, ToolTip = "Arc that launch should follow. Zero is no launch."))
 	float Arc;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Character")

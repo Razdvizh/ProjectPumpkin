@@ -6,8 +6,10 @@
 #include "HordeCharacter.h"
 #include "HordeBoss.generated.h"
 
-class UShpereComponent;
+class USphereComponent;
+class UPrimitiveComponent;
 struct FTimerHandle;
+struct FHitResult;
 
 UCLASS()
 class PROJECTPUMPKIN_API AHordeBoss : public AHordeCharacter
@@ -21,31 +23,57 @@ public:
 
 	virtual void Interact_Implementation(AActor* Initiator) override;
 
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0) override;
+
 	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
 	FORCEINLINE float GetJumpDelay() const { return JumpDelay; }
 
 	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
 	FORCEINLINE float GetLandingGravity() const { return LandingGravity; }
 
+	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
+	FORCEINLINE float GetExpandingSpeed() const { return ExpandingSpeed; }
+
+	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
+	FORCEINLINE float GetMaxExpansionRadius() const { return MaxExpansionRadius; }
+
 	UFUNCTION(BlueprintCallable, Category = "Horde|Boss")
 	void SetJumpDelay(float Delay);
 
 	UFUNCTION(BlueprintCallable, Category = "Horde|Boss")
 	void SetLandingGravity(float Gravity);
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Horde|Boss")
+	void SetExpandingSpeed(float Speed);
+
+	UFUNCTION(BlueprintCallable, Category = "Horde|Boss")
+	void SetMaxExpansionRadius(float Radius);
+
 protected:
+	virtual void BeginPlay() override;
+
 	virtual void Jump() override;
+
+	UFUNCTION()
+	virtual void OnExpandingSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetJumpDelay, BlueprintSetter = SetJumpDelay, Category = "Horde|Boss", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Resting time between jumps."))
 	float JumpDelay;
 
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetLandingGravity, BlueprintSetter = SetLandingGravity, Category = "Horde|Boss", meta = (ToolTip = "Gravity to use when boss is falling. Zero means world gravityZ will be used."))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetLandingGravity, Category = "Horde|Boss", meta = (ToolTip = "Gravity to use when boss is falling. Zero means world gravityZ will be used."))
 	float LandingGravity;
 
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetExpandingSpeed, BlueprintSetter = SetExpandingSpeed, Category = "Horde|Boss", meta = (ClampMin = 0.f, UIMin = 0.f, ForceUnits = "cm/s", ToolTip = "Speed to use when interpolating afterjump sphere's expansion."))
+	float ExpandingSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetMaxExpansionRadius, BlueprintSetter = SetMaxExpansionRadius, Category = "Horde|Boss", meta = (Units = "cm", ToolTip = "Maximum radius that the expanding sphere can reach."))
+	float MaxExpansionRadius;
+	
 private:
 	bool bNeedsToTick;
 
+	UPROPERTY(VisibleDefaultsOnly)
 	USphereComponent* ExpandingSphere;
 
 	FTimerHandle JumpIntervalHandle;
