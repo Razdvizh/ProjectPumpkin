@@ -76,7 +76,6 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 					Stage = EGrowingStage::Large;
 					break;
 				case EGrowingStage::Large:
-					//CurrentGrowingTime = GrowingTime + SMALL_NUMBER; //Should never reach, but if it happens disable the tick as there is no need to grow further
 					break;
 				default:
 					check(false);
@@ -115,14 +114,14 @@ void AGrowingPumpkin::SetGrowingCurve(UCurveVector* Curve)
 
 void AGrowingPumpkin::SetGrowingTime(float Time)
 {
-	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Time, FString::Printf(TEXT("Time value: %f is negative! Pumpkin will use default growing time."), Time));
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Time, FString::Printf(TEXT("Time value: %f is negative! Pumpkin will use current growing time."), Time));
 
 	GrowingTime = Time;
 }
 
 void AGrowingPumpkin::SetPauseBetweenStages(float Time)
 {
-	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Time, FString::Printf(TEXT("Time value: %f is negative! Pumpkin will use default pause time."), Time));
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Time, FString::Printf(TEXT("Time value: %f is negative! Pumpkin will use current pause time."), Time));
 		
 	PauseBetweenStages = Time;
 }

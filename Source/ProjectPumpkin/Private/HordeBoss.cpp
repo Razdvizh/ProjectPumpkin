@@ -14,9 +14,18 @@
 
 constexpr float APPROX_BOSS_PUMPKIN_MESH_RADIUS = 264.f / 2;
 
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+static TAutoConsoleVariable<bool> CVarDebugBossExpandingSphere
+(
+	TEXT("Pumpkin.Boss.DebugExpandingSphere"),
+	false,
+	TEXT("Visualizes expanding sphere together with some useful information about it."),
+	ECVF_Default
+);
+#endif
+
 AHordeBoss::AHordeBoss()
 	: JumpDelay(2.f),
-	LandingGravity(-2.f),
 	ExpandingSpeed(1.f),
 	MaxExpansionRadius(APPROX_BOSS_PUMPKIN_MESH_RADIUS * 2),
 	bNeedsToTick(false)
@@ -24,6 +33,9 @@ AHordeBoss::AHordeBoss()
 	LaunchDistance = 350.f;
 	LaunchBoost = 1.f;
 	Arc = 1.f;
+
+	CachedGravityScale = GetCharacterMovement()->GravityScale;
+	LandingGravityScale = CachedGravityScale;
 
 	ExpandingSphere = CreateDefaultSubobject<USphereComponent>(TEXT("ExpandingSphere"));
 	ExpandingSphere->InitSphereRadius(APPROX_BOSS_PUMPKIN_MESH_RADIUS);
@@ -43,6 +55,17 @@ void AHordeBoss::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+	if (CVarDebugBossExpandingSphere.GetValueOnGameThread())
+	{
+		ExpandingSphere->SetVisibility(true);
+		ExpandingSphere->SetHiddenInGame(false);
+		GEngine->AddOnScreenDebugMessage(997, 0.1f, FColor::Emerald, FString::Printf(TEXT("Sphere radius: %f"), ExpandingSphere->GetUnscaledSphereRadius()));
+		GEngine->AddOnScreenDebugMessage(998, 0.1f, FColor::Emerald, FString::Printf(TEXT("Max Sphere radius: %f"), MaxExpansionRadius));
+		GEngine->AddOnScreenDebugMessage(999, 0.1f, FColor::Emerald, FString::Printf(TEXT("Expanding speed: %f"), ExpandingSpeed));
+	}
+	#endif
+
 	if (bNeedsToTick)
 	{
 		const float CurrentRadius = ExpandingSphere->GetUnscaledSphereRadius();
@@ -53,6 +76,7 @@ void AHordeBoss::Tick(float DeltaTime)
 	else
 	{
 		ExpandingSphere->SetSphereRadius(APPROX_BOSS_PUMPKIN_MESH_RADIUS);
+		GetCharacterMovement()->GravityScale = CachedGravityScale;
 	}
 }
 
@@ -80,26 +104,28 @@ void AHordeBoss::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 Pre
 
 void AHordeBoss::SetJumpDelay(float Delay)
 {
-	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Delay, FString::Printf(TEXT("Delay value: %f is negative! Boss will use default jump delay value."), Delay));
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Delay, FString::Printf(TEXT("Delay value: %f is negative! Boss will use current jump delay value."), Delay));
 
 	JumpDelay = Delay;
 }
 
 void AHordeBoss::SetLandingGravity(float Gravity)
 {
-	LandingGravity = Gravity;
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Gravity, FString::Printf(TEXT("Gravity value: %f is negative! Boss will use current gravity value."), Gravity));
+
+	LandingGravityScale = Gravity;
 }
 
 void AHordeBoss::SetExpandingSpeed(float Speed)
 {
-	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Speed, FString::Printf(TEXT("Speed value: %f is negative! Boss will use default expanding speed value."), Speed));
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Speed, FString::Printf(TEXT("Speed value: %f is negative! Boss will use current expanding speed value."), Speed));
 
 	ExpandingSpeed = Speed;
 }
 
 void AHordeBoss::SetMaxExpansionRadius(float Radius)
 {
-	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Radius, FString::Printf(TEXT("Radius value: %f is negative! Boss will use default expansion radius value."), Radius));
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Radius, FString::Printf(TEXT("Radius value: %f is negative! Boss will use current expansion radius value."), Radius));
 
 	MaxExpansionRadius = Radius;
 }
@@ -117,6 +143,7 @@ void AHordeBoss::Jump()
 {
 	Super::Jump();
 
+	GetCharacterMovement()->GravityScale = LandingGravityScale;
 	GetWorld()->GetTimerManager().SetTimer(JumpIntervalHandle, this, &AHordeBoss::Jump, JumpDelay, false);
 }
 

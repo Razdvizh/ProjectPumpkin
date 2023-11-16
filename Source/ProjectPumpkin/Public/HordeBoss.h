@@ -29,7 +29,7 @@ public:
 	FORCEINLINE float GetJumpDelay() const { return JumpDelay; }
 
 	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
-	FORCEINLINE float GetLandingGravity() const { return LandingGravity; }
+	FORCEINLINE float GetLandingGravity() const { return LandingGravityScale; }
 
 	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
 	FORCEINLINE float GetExpandingSpeed() const { return ExpandingSpeed; }
@@ -58,11 +58,11 @@ protected:
 	virtual void OnExpandingSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetJumpDelay, BlueprintSetter = SetJumpDelay, Category = "Horde|Boss", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Resting time between jumps."))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetJumpDelay, BlueprintSetter = SetJumpDelay, Category = "Horde|Boss", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Resting time between jumps. Zero means no jumping."))
 	float JumpDelay;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetLandingGravity, Category = "Horde|Boss", meta = (ToolTip = "Gravity to use when boss is falling. Zero means world gravityZ will be used."))
-	float LandingGravity;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetLandingGravity, Category = "Horde|Boss", meta = (ClampMin = 0.f, UIMin = 0.f, DisplayName = "Gravity multiplier", ToolTip = "Gravity will be multiplied by this value when boss is falling."))
+	float LandingGravityScale;
 
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetExpandingSpeed, BlueprintSetter = SetExpandingSpeed, Category = "Horde|Boss", meta = (ClampMin = 0.f, UIMin = 0.f, ForceUnits = "cm/s", ToolTip = "Speed to use when interpolating afterjump sphere's expansion."))
 	float ExpandingSpeed;
@@ -75,6 +75,8 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly)
 	USphereComponent* ExpandingSphere;
+
+	float CachedGravityScale;
 
 	FTimerHandle JumpIntervalHandle;
 
