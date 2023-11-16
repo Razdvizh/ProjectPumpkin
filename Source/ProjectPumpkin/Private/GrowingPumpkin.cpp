@@ -27,7 +27,8 @@ AGrowingPumpkin::AGrowingPumpkin()
 	Stage(EGrowingStage::Small),
 	CurrentGrowingTime(0.f),
 	bNeedsToTick(false),
-	InitialCurveScale(FVector::ZeroVector)
+	InitialCurveScale(FVector::ZeroVector),
+	InitialLocationZ(0)
 {
 	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
 
@@ -126,6 +127,17 @@ void AGrowingPumpkin::SetPauseBetweenStages(float Time)
 	PauseBetweenStages = Time;
 }
 
+void AGrowingPumpkin::ResetGrowth()
+{
+	SetActorScale3D(InitialCurveScale);
+	bNeedsToTick = true;
+	CurrentGrowingTime = 0.f;
+	SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, InitialLocationZ));
+	Stage = EGrowingStage::Small;
+
+	OnGrowingStageReached.Broadcast(Stage);
+}
+
 #if WITH_EDITOR
 void AGrowingPumpkin::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -187,19 +199,13 @@ void AGrowingPumpkin::BeginPlay()
 		InitialCurveScale = GrowingCurve->GetVectorValue(0.f);
 		SetActorScale3D(InitialScale);
 
+		InitialLocationZ = GetActorLocation().Z;
 		bNeedsToTick = true;
 	}
 }
 
 void AGrowingPumpkin::OnStageReached(EGrowingStage GrowingStage)
 {
-	if (GrowingStage == EGrowingStage::Large)
-	{
-		SetActorScale3D(InitialCurveScale);
-		bNeedsToTick = true;
-		CurrentGrowingTime = 0.f;
-		SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, 10.f));
-	}
 	GetWorld()->GetTimerManager().SetTimer(StagePauseHandle, PauseBetweenStages, false);
 }
 
