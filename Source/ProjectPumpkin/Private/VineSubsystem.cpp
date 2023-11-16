@@ -13,7 +13,7 @@
 #include "ProjectPumpkinSettings.h"
 
 UVineSubsystem::UVineSubsystem()
-	: TimeToActivate(1.5f),
+	: ActivationTime(1.5f),
 	CurrentActivationTime(0.f),
 	bNeedsToTick(false),
 	ActivationCurve()
@@ -28,7 +28,7 @@ void UVineSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	const float ActiveVinesRatio = ProjectPumpkinSettings->GetActiveVinesRatio();
 	const float NewZOffset = ProjectPumpkinSettings->GetNewZOffset();
 
-	TimeToActivate = ProjectPumpkinSettings->GetTimeToActivate();
+	ActivationTime = ProjectPumpkinSettings->GetActivationTime();
 	ActivationCurve = ProjectPumpkinSettings->GetActivationCurve().GetRichCurve();
 
 	if (ActiveVinesRatio < 1.f)
@@ -75,12 +75,12 @@ void UVineSubsystem::Tick(float DeltaTime)
 {
 	UTickableWorldSubsystem::Tick(DeltaTime);
 
-	if (CurrentActivationTime < TimeToActivate)
+	if (CurrentActivationTime < ActivationTime)
 	{
 		CurrentActivationTime += DeltaTime;
 		for (ASlowingVine* InactiveVine : VinesToActivate)
 		{
-			const float TimeRatio = FMath::Clamp(CurrentActivationTime / TimeToActivate, 0.f, 1.f);
+			const float TimeRatio = FMath::Clamp(CurrentActivationTime / ActivationTime, 0.f, 1.f);
 			const float ActivationAlpha = ActivationCurve->Eval(TimeRatio);
 
 			const TTuple<const FVector, const FVector>* Locations = InactiveVines.Find(InactiveVine);
@@ -149,6 +149,13 @@ void UVineSubsystem::ActivateVines(TArray<ASlowingVine*> Vines)
 	{
 		ActivateVine(Vine);
 	}
+}
+
+void UVineSubsystem::SetActivationTime(float Time)
+{
+	RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Time, TEXT("Time value: %f is negative! Vine subsystem will use current time to activate vines value."))
+
+	ActivationTime = Time;
 }
 
 void UVineSubsystem::GetInactiveVines(TArray<ASlowingVine*>& Vines) const

@@ -39,11 +39,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Vine Subsystem")
 	void ActivateVines(TArray<ASlowingVine*> Vines);
 
+	UFUNCTION(BlueprintCallable, Category = "Vine Subsystem", meta = (ToolTip = "Set time it takes to activate inactive vines. Zero means no activation."))
+	void SetActivationTime(float Time);
+
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Vine Subsystem", meta = (ToolTip = "Writes inactive vines to the Vines array. Note that vines are considered inactive even if they are in the process of being activated!"))
 	void GetInactiveVines(TArray<ASlowingVine*>& Vines) const;
 
 	UFUNCTION(BlueprintPure, Category = "Vine Subsystem")
 	FORCEINLINE int32 GetInactiveVinesNum() const { return InactiveVines.Num(); }
+
+	UFUNCTION(BlueprintPure, Category = "Vine Subsystem", meta = (ToolTip = "Get time it takes to activate inactive vines."))
+	FORCEINLINE float GetActivationTime() const { return ActivationTime; }
 
 	UFUNCTION(BlueprintPure, Category = "Vine Subsystem")
 	FORCEINLINE bool IsActivationInProgress() const { return IsTickable(); }
@@ -54,7 +60,7 @@ protected:
 	TMap<ASlowingVine*, TTuple<const FVector, const FVector>> InactiveVines;
 
 private:
-	float TimeToActivate;
+	float ActivationTime;
 
 	float CurrentActivationTime;
 

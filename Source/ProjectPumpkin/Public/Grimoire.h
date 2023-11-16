@@ -30,4 +30,10 @@ protected:
 	UPROPERTY(EditInstanceOnly, Category = "Grimoire")
 	AFirepit* Firepit;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Grimoire", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 1.f, UIMax = 1.f, ToolTip = "Ratio of how many inactive vines will be left after the grimoire is picked up."))
+	float RemainingVinesRatio;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Grimoire", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Time it takes to activate vines when the grimoire is picked up. Zero means no vines will be activated."))
+	float VineActivationTime;
+
 };

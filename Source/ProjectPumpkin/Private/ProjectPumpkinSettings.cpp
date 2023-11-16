@@ -6,7 +6,7 @@
 
 UProjectPumpkinSettings::UProjectPumpkinSettings() 
 	: ActiveVinesRatio(1.f),
-	TimeToActivate(1.5f),
+	ActivationTime(1.5f),
 	NewZOffset(50.f),
 	ActivationCurve()
 {

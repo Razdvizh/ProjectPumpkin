@@ -23,7 +23,7 @@ public:
 	FORCEINLINE float GetActiveVinesRatio() const { return ActiveVinesRatio; }
 
 	UFUNCTION(BlueprintPure, Category = "Project Pumpkin Settings")
-	FORCEINLINE float GetTimeToActivate() const { return TimeToActivate; }
+	FORCEINLINE float GetActivationTime() const { return ActivationTime; }
 
 	UFUNCTION(BlueprintPure, Category = "Project Pumpkin Settings")
 	FORCEINLINE float GetNewZOffset() const { return NewZOffset; }
@@ -36,7 +36,7 @@ private:
 	float ActiveVinesRatio;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "How long it will take to activate vines after the activation was requested."))
-	float TimeToActivate;
+	float ActivationTime;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ClampMin = 0.f, UIMin = 0.f, ToolTip = "How close the height of inactive vine to its original height. Zero means as down as possible."))
 	float NewZOffset;
