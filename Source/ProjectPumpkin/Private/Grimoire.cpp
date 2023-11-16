@@ -4,11 +4,15 @@
 #include "Grimoire.h"
 #include "Components/StaticMeshComponent.h"
 #include "ActivationVolumeComponent.h"
+#include "MassSpawner.h"
+#include "Firepit.h"
 #include "ProjectPumpkin/ProjectPumpkinCharacter.h"
 
 // Sets default values
 AGrimoire::AGrimoire()
 {
+	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
+
 	PrimaryActorTick.bCanEverTick = false;
 	Mesh->PrimaryComponentTick.bCanEverTick = false;
 	ActivationVolume->PrimaryComponentTick.bCanEverTick = false;
@@ -18,10 +22,13 @@ void AGrimoire::OnVolumeActivated(AActor* Activator)
 {
 	if (AProjectPumpkinCharacter* Character = Cast<AProjectPumpkinCharacter>(Activator))
 	{
+		if (Firepit && BossSpawner)
+		{
+			BossSpawner->DoSpawning();
+			Firepit->MarkAsActivateable();
+		}
+
 		Destroy();
-		//Bonfire->Lit(); Delegate to game mode?
-		//SpawnPumpkinBoss(); Delegate to game mode?
-		//DisplayInUI(); Delegate to HUD?
 	}
 }
 

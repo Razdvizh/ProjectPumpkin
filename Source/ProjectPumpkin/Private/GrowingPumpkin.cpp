@@ -17,7 +17,7 @@
 constexpr int32 NUM_STAGES = 3;
 constexpr float MEDIUM_HEAL = 1.f;
 constexpr float LARGE_HEAL = 2.f;
-constexpr float KEY_TIME_TOLERANCE = 1.999999e-3f;
+constexpr float KEY_TIME_TOLERANCE = 2e-3f;
 
 // Sets default values
 AGrowingPumpkin::AGrowingPumpkin()
@@ -55,7 +55,7 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 
 			//Offset Z position after scaling up.
 			FVector ActorLocation = GetActorLocation();
-			ActorLocation += FVector(0.f, 0.f, InitialCurveScale.Z);
+			ActorLocation += FVector(0.f, 0.f, InitialCurveScale.Z * Scale.Z);
 			SetActorLocation(ActorLocation);
 
 			const FRichCurve FirstCurve = GrowingCurve->FloatCurves[0];

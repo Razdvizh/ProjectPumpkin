@@ -29,6 +29,8 @@ void AHordeSpawner::SetSpawnDelay(float Delay)
 
 void AHordeSpawner::DoSpawningAsync()
 {
+	UnloadConfig();
+
 	AsyncTask(ENamedThreads::GameThread, [this]()
 	{
 		DoSpawning();

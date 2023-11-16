@@ -6,8 +6,10 @@
 #include "ActivateableActor.h"
 #include "Firepit.generated.h"
 
+class UNiagaraComponent;
+
 UCLASS()
-class PROJECTPUMPKIN_API AFirepit : public AActivateableActor
+class PROJECTPUMPKIN_API AFirepit final : public AActivateableActor
 {
 	GENERATED_BODY()
 	
@@ -16,8 +18,20 @@ public:
 	AFirepit();
 
 protected:
+	virtual void BeginPlay() override;
+
 	virtual void OnVolumeActivated(AActor* Activator) override;
 
 	virtual void OnVolumeDeactivated(AActor* Activator) override;
 
+private:
+	void MarkAsActivateable();
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Firepit", meta = (AllowPrivateAccess = true))
+	UNiagaraComponent* FireFX;
+
+	bool bCanBeActivated;
+
+	friend class AGrimoire;
 };

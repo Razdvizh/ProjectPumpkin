@@ -6,6 +6,9 @@
 #include "ActivateableActor.h"
 #include "Grimoire.generated.h"
 
+class AMassSpawner;
+class AFirepit;
+
 UCLASS()
 class PROJECTPUMPKIN_API AGrimoire : public AActivateableActor
 {
@@ -16,8 +19,15 @@ public:
 	AGrimoire();
 
 protected:
-	virtual void OnVolumeActivated(AActor* Activator) override;
+	virtual void OnVolumeActivated(AActor* Activator) final override;
 
 	virtual void OnVolumeDeactivated(AActor* Activator) override;
+
+protected:
+	UPROPERTY(EditInstanceOnly, Category = "Grimoire")
+	AMassSpawner* BossSpawner;
+
+	UPROPERTY(EditInstanceOnly, Category = "Grimoire")
+	AFirepit* Firepit;
 
 };

@@ -3,24 +3,48 @@
 #include "Firepit.h"
 #include "Components/StaticMeshComponent.h"
 #include "ActivationVolumeComponent.h"
+#include "NiagaraComponent.h"
 #include "ProjectPumpkin/ProjectPumpkinGameMode.h"
 #include "ProjectPumpkin/ProjectPumpkinPlayerController.h"
+#include "ProjectPumpkin/ProjectPumpkinCharacter.h"
 
 // Sets default values
-AFirepit::AFirepit()
+AFirepit::AFirepit() : bCanBeActivated(false)
 {
+	FireFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Fire"));
+	FireFX->SetupAttachment(Mesh, TEXT("S_fire"));
+
+	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
+
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	Mesh->PrimaryComponentTick.bCanEverTick = false;
 	ActivationVolume->PrimaryComponentTick.bCanEverTick = false;
+	FireFX->PrimaryComponentTick.bCanEverTick = true;
+}
+
+void AFirepit::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FireFX->Deactivate();
 }
 
 void AFirepit::OnVolumeActivated(AActor* Activator)
 {
-	AProjectPumpkinGameMode::GetPumpkinPlayerController(GetWorld())->ConsoleCommand(TEXT("quit"));
+	if (bCanBeActivated)
+	{
+		AProjectPumpkinGameMode::GetPumpkinPlayerController(GetWorld())->ConsoleCommand(TEXT("quit"));
+	}
 }
 
 void AFirepit::OnVolumeDeactivated(AActor* Activator)
 {
 	//No op
+}
+
+void AFirepit::MarkAsActivateable()
+{
+	FireFX->ActivateSystem();
+	bCanBeActivated = true;
 }
