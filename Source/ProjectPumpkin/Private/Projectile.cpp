@@ -2,7 +2,7 @@
 
 #include "Projectile.h"
 #include "Components/SphereComponent.h"
-#include "Components/StaticMeshComponent.h"
+#include "NiagaraComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Interactable.h"
 #if WITH_EDITORONLY_DATA
@@ -22,10 +22,10 @@ AProjectile::AProjectile()
 	Collision->SetGenerateOverlapEvents(true);
 	Collision->SetCollisionProfileName("Projectile");
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh"));
+	ProjectileFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileSystem"));
 
-	Mesh->SetupAttachment(Collision);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ProjectileFX->SetupAttachment(Collision);
+	ProjectileFX->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->SetUpdatedComponent(Collision);
@@ -46,7 +46,7 @@ AProjectile::AProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	Collision->PrimaryComponentTick.bCanEverTick = false;
-	Mesh->PrimaryComponentTick.bCanEverTick = false;
+	ProjectileFX->PrimaryComponentTick.bCanEverTick = true;
 #if WITH_EDITORONLY_DATA
 	Arrow->PrimaryComponentTick.bCanEverTick = false;
 #endif
