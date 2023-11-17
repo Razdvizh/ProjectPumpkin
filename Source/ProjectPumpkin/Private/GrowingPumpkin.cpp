@@ -126,10 +126,33 @@ void AGrowingPumpkin::SetPauseBetweenStages(float Time)
 	PauseBetweenStages = Time;
 }
 
+void AGrowingPumpkin::StartGrowth()
+{
+	const FVector InitialScale = GrowingCurve->GetVectorValue(0.f);
+	const FVector LastScale = GrowingCurve->GetVectorValue(1.f);
+
+	if (ensureMsgf(!InitialScale.IsZero() && !LastScale.IsZero(), TEXT("Curve contains negative scale!")))
+	{
+		if (GrowingTime <= 0.f)
+		{
+			Stage = EGrowingStage::Large;
+			SetActorScale3D(LastScale);
+			return;
+		}
+
+		if (!InitialScale.Equals(GetActorScale3D()))
+		{
+			UE_LOG(LogProjectPumpkin, Warning, TEXT("Initial curve scale and actor scale are different, actor will be scaled to match the curve."));
+		}
+
+		bNeedsToTick = true;
+	}
+}
+
 void AGrowingPumpkin::ResetGrowth()
 {
+	bNeedsToTick = false;
 	SetActorScale3D(InitialCurveScale);
-	bNeedsToTick = true;
 	CurrentGrowingTime = 0.f;
 	SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, InitialLocationZ));
 	Stage = EGrowingStage::Small;
@@ -177,30 +200,13 @@ void AGrowingPumpkin::BeginPlay()
 	OnGrowingStageReached.AddUniqueDynamic(this, &AGrowingPumpkin::OnStageReached);
 
 	Super::BeginPlay();
-	
-	const FVector InitialScale = GrowingCurve->GetVectorValue(0.f);
-	const FVector LastScale = GrowingCurve->GetVectorValue(1.f);
 
-	if (ensureMsgf(!InitialScale.IsZero() && !LastScale.IsZero(), TEXT("Curve contains negative scale!")))
-	{
-		if (GrowingTime <= 0.f)
-		{
-			Stage = EGrowingStage::Large;
-			SetActorScale3D(LastScale);
-			return;
-		}
+	InitialCurveScale = GrowingCurve->GetVectorValue(0.f);
+	SetActorScale3D(InitialCurveScale);
 
-		if (!InitialScale.Equals(GetActorScale3D()))
-		{
-			UE_LOG(LogProjectPumpkin, Warning, TEXT("Initial curve scale and actor scale are different, actor will be scaled to match the curve."));
-		}
+	InitialLocationZ = GetActorLocation().Z;
 
-		InitialCurveScale = GrowingCurve->GetVectorValue(0.f);
-		SetActorScale3D(InitialScale);
-
-		InitialLocationZ = GetActorLocation().Z;
-		bNeedsToTick = true;
-	}
+	StartGrowth();
 }
 
 void AGrowingPumpkin::OnStageReached(EGrowingStage GrowingStage)

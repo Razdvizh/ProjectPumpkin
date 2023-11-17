@@ -8,6 +8,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ProjectPumpkin/ProjectPumpkinGameMode.h"
+#include "ProjectPumpkin/ProjectPumpkinPlayerController.h"
 #include "MassAgentComponent.h"
 #include "HealthComponent.h"
 #include "DamageInfo.h"
@@ -31,6 +33,7 @@
 #pragma endregion Engine
 #pragma region Misc
 #include "ProjectPumpkin.h"
+#include "TimerManager.h"
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 #include "DrawDebugHelpers.h"
 #endif
@@ -48,6 +51,7 @@ static TAutoConsoleVariable<bool> CVarDebugMouseHit(
 AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer),
 	  LookOffset(0.f, 180.f, 0.f),
+	  RestartLevelDelay(3.f),
 	  ProjectileClass(AProjectile::StaticClass()),
 	  bIsLooking(false)
 {
@@ -139,6 +143,11 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 
 void AProjectPumpkinCharacter::OnDemise()
 {
+	UWorld* World = GetWorld();
+	AProjectPumpkinPlayerController* PlayerController = AProjectPumpkinGameMode::GetPumpkinPlayerController(World);
+	
+	World->GetTimerManager().SetTimer(RestartLevelHandle, PlayerController, &AProjectPumpkinPlayerController::RestartLevel, RestartLevelDelay);
+
 	Destroy();
 }
 
