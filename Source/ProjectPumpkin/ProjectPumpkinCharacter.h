@@ -14,6 +14,7 @@ class UHealthComponent;
 class UMassAgentComponent;
 class AProjectile;
 struct FInputActionValue;
+struct FTimerHandle;
 
 UCLASS(Blueprintable)
 class AProjectPumpkinCharacter : public AMortalCharacter, public IInteractable
@@ -27,6 +28,9 @@ public:
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+	UFUNCTION(BlueprintPure, Category = "Game")
+	FORCEINLINE float GetRestartLevelDelay() const { return RestartLevelDelay; }
 
 	virtual void Interact_Implementation(AActor* Initiator) override;
 
@@ -57,6 +61,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (ToolTip = "Offset for character rotation during look towards the mouse cursor."))
 	FRotator LookOffset;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetRestartLevelDelay, Category = "Game", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Delay before level would be restarted. Zero means no restart."))
+	float RestartLevelDelay;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile", meta = (DisplayName = "Projectile", ToolTip = "Projectile to spawn."))
 	TSubclassOf<AProjectile> ProjectileClass;
 
@@ -83,6 +90,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
 	UInputAction* ShootAction;
+
+	FTimerHandle RestartLevelHandle;
 
 	bool bIsLooking;
 

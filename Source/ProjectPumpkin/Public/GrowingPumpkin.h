@@ -56,6 +56,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Growing Pumpkin")
 	void SetPauseBetweenStages(float Time);
 
+	UFUNCTION(BlueprintCallable, Category = "Growing Pumpkin")
+	void StartGrowth();
+
 	UFUNCTION(BlueprintCallable, Category = "Growing Pumpkin", meta = (ToolTip = "Reset pumpkin back to growing stage."))
 	void ResetGrowth();
 
