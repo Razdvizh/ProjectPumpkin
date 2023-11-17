@@ -15,8 +15,6 @@
 #endif
 
 constexpr int32 NUM_STAGES = 3;
-constexpr float MEDIUM_HEAL = 1.f;
-constexpr float LARGE_HEAL = 2.f;
 constexpr float KEY_TIME_TOLERANCE = 2e-3f;
 
 // Sets default values
@@ -31,6 +29,8 @@ AGrowingPumpkin::AGrowingPumpkin()
 	InitialLocationZ(0)
 {
 	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
+	StageHeal.Add(EGrowingStage::Medium, 1.f);
+	StageHeal.Add(EGrowingStage::Large, 2.f);
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -212,20 +212,13 @@ void AGrowingPumpkin::OnVolumeActivated(AActor* Activator)
 {
 	if (AProjectPumpkinCharacter* Character = Cast<AProjectPumpkinCharacter>(Activator))
 	{
-		switch(Stage)
+		if (float* Health = StageHeal.Find(Stage))
 		{
-		case EGrowingStage::Small:
-			break;
-		case EGrowingStage::Medium:
-			Character->GetHealthComponent()->Heal(MEDIUM_HEAL);
+			Character->GetHealthComponent()->Heal(*Health);
+		}
+		if (Stage == EGrowingStage::Medium || Stage == EGrowingStage::Large)
+		{
 			Destroy();
-			break;
-		case EGrowingStage::Large:
-			Character->GetHealthComponent()->Heal(LARGE_HEAL);
-			Destroy();
-			break;
-		default:
-			check(false);
 		}
 	}
 }

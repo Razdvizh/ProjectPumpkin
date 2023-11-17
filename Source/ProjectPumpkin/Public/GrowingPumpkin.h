@@ -78,6 +78,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintSetter = SetGrowingCurve, NoClear, Category = "Growing Pumpkin", meta = (ToolTip = "Growing rate ratio (First key time = 0, Last key time = 1). Must have three keys for small, medium and large stages."))
 	UCurveVector* GrowingCurve;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, NoClear, Category = "Growing Pumpkin", meta = (ValidEnumValues = "Medium, Large", ToolTip = "Amount of health the character will receive during overlapping with pumpkin that reached corresponding stage."))
+	TMap<EGrowingStage, float> StageHeal;
+
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetGrowingTime, BlueprintSetter = SetGrowingTime, Category = "Growing Pumpkin", meta = (CampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Time that pumpkin takes to fully grow. Zero means that pumpkin will spawn fully grown."))
 	float GrowingTime;
 
