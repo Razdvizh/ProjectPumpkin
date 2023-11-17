@@ -4,10 +4,12 @@
 #include "Grimoire.h"
 #include "Components/StaticMeshComponent.h"
 #include "ActivationVolumeComponent.h"
-#include "MassSpawner.h"
+#include "HordeSpawner.h"
+#include "MassHorde/Public/MassHordeHelpers.h"
 #include "Firepit.h"
 #include "VineSubsystem.h"
 #include "SlowingVine.h"
+#include "EngineUtils.h"
 #include "ProjectPumpkin/ProjectPumpkinCharacter.h"
 
 // Sets default values
@@ -45,8 +47,9 @@ void AGrimoire::OnVolumeActivated(AActor* Activator)
 				{
 					VineSubsystem->ActivateVine(InactiveVines[i]);
 				}
-			}	
+			}
 
+			BossSpawner->UnloadConfig();
 			BossSpawner->DoSpawning();
 			Firepit->MarkAsActivateable();
 		}

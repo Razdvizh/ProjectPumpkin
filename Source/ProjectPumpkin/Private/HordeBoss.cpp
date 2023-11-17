@@ -30,10 +30,6 @@ AHordeBoss::AHordeBoss()
 	MaxExpansionRadius(APPROX_BOSS_PUMPKIN_MESH_RADIUS * 2),
 	bNeedsToTick(false)
 {
-	LaunchDistance = 350.f;
-	LaunchBoost = 1.f;
-	Arc = 1.f;
-
 	CachedGravityScale = GetCharacterMovement()->GravityScale;
 	LandingGravityScale = CachedGravityScale;
 
@@ -82,6 +78,10 @@ void AHordeBoss::Tick(float DeltaTime)
 
 void AHordeBoss::Interact_Implementation(AActor* Initiator)
 {
+	if (Initiator->IsA<AProjectPumpkinCharacter>())
+	{
+		Jump();
+	}
 	if (Initiator->IsA<AProjectile>())
 	{
 		Super::Interact_Implementation(Initiator);

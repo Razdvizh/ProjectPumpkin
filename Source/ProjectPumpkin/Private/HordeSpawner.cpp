@@ -29,8 +29,6 @@ void AHordeSpawner::SetSpawnDelay(float Delay)
 
 void AHordeSpawner::DoSpawningAsync()
 {
-	UnloadConfig();
-
 	AsyncTask(ENamedThreads::GameThread, [this]()
 	{
 		DoSpawning();
@@ -39,6 +37,12 @@ void AHordeSpawner::DoSpawningAsync()
 
 void AHordeSpawner::OnVolumeActivated(AActor* Activator)
 {
+	/* Need to unload config and clear templates before spawning so that the selected entity type can spawn.
+	* Looks like there is a bug in the UMassSpawnerSubsystem that doesn't account for a different entity config if it's coming from a different spawner. 
+	* See: UMassHordeHelpers::ResetMassSpawnerConfig
+	*/
+	UnloadConfig();
+
 	GetWorld()->GetTimerManager().SetTimer(SpawnIntervalHandle, this, &AHordeSpawner::DoSpawningAsync, SpawnDelay, true);
 }
 

@@ -3,7 +3,10 @@
 #include "MassHordeHelpers.h"
 #include "MassAgentComponent.h"
 #include "MassEntityManager.h"
+#include "MassSpawner.h"
 #include "GameFramework/Actor.h"
+
+DEFINE_LOG_CATEGORY(LogHordeHelpers);
 
 void UMassHordeHelpers::DestroyMassAgent(UMassAgentComponent* MassAgent)
 {
@@ -13,5 +16,17 @@ void UMassHordeHelpers::DestroyMassAgent(UMassAgentComponent* MassAgent)
 	if (bIsSafeToKill)
 	{
 		MassAgent->KillEntity(true);
+	}
+}
+
+void UMassHordeHelpers::ResetMassSpawnerConfig(AMassSpawner* Spawner)
+{
+	if (Spawner)
+	{
+		Spawner->UnloadConfig();
+	}
+	else
+	{
+		UE_LOG(LogHordeHelpers, Display, TEXT("Received mass spawner is invalid, no resetting will be performed."));
 	}
 }
