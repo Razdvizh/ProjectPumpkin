@@ -22,6 +22,7 @@ enum class EHealthAssignmentResult : uint8
 ENUM_RANGE_BY_FIRST_AND_LAST(EHealthAssignmentResult, EHealthAssignmentResult::None, EHealthAssignmentResult::Ok);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLethalHealthReachedEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedEvent, float, CurrentHealth);
 
 /*
 * Represents actor lifespan based on health points. Only unsigned health and damage input is considered valid. 
@@ -77,6 +78,9 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Health Component", meta = (ToolTip = "Delegate is broadcasted when CurrentHealth is equal or less than LethalHealth"))
 	FOnLethalHealthReachedEvent OnLethalHealthReached;
+
+	UPROPERTY(BlueprintAssignable, Category = "Health Component", meta = (ToolTip = "Delegate is broadcasted when CurrentHealth was changed. Returns the value after the change."))
+	FOnHealthChangedEvent OnHealthChanged;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = IsBurstProtected, Category = "Health Component", meta = (DisplayAfter = LethalHealth, ToolTip = "Activate the delay between damage inputs"))
 	bool bBurstProtection;

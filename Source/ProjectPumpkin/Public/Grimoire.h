@@ -6,6 +6,8 @@
 #include "ActivateableActor.h"
 #include "Grimoire.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGrimoirePickedUpEvent);
+
 class AMassSpawner;
 class AFirepit;
 
@@ -17,6 +19,9 @@ class PROJECTPUMPKIN_API AGrimoire : public AActivateableActor
 public:	
 	// Sets default values for this actor's properties
 	AGrimoire();
+
+	UPROPERTY(BlueprintAssignable, Category = "Grimoire")
+	FOnGrimoirePickedUpEvent OnGrimoirePickedUp;
 
 protected:
 	virtual void OnVolumeActivated(AActor* Activator) final override;

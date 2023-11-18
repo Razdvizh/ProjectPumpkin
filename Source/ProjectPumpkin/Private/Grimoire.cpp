@@ -54,6 +54,7 @@ void AGrimoire::OnVolumeActivated(AActor* Activator)
 			Firepit->MarkAsActivateable();
 		}
 
+		OnGrimoirePickedUp.Broadcast();
 		Destroy();
 	}
 }

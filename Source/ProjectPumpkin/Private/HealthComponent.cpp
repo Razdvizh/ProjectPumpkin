@@ -36,6 +36,8 @@ EHealthAssignmentResult UHealthComponent::Heal(float HealAmount)
 		{
 			CurrentHealth += HealAmount;
 		}
+
+		OnHealthChanged.Broadcast(CurrentHealth);
 	}
 
 	return Result;
@@ -56,6 +58,8 @@ EHealthAssignmentResult UHealthComponent::Damage(float DamageAmount)
 		CurrentHealth -= DamageAmount;
 		bTookDamage = true;
 
+		OnHealthChanged.Broadcast(CurrentHealth);
+
 		if (CurrentHealth <= LethalHealth)
 		{
 			OnLethalHealthReached.Broadcast();
@@ -74,6 +78,7 @@ EHealthAssignmentResult UHealthComponent::SetMaxHealth(float NewMaxHealth)
 		if (FMath::IsNearlyEqual(CurrentHealth, MaxHealth))
 		{
 			CurrentHealth = NewMaxHealth;
+			OnHealthChanged.Broadcast(CurrentHealth);
 		}
 
 		MaxHealth = NewMaxHealth;
