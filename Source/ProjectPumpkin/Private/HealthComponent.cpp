@@ -11,8 +11,7 @@ UHealthComponent::UHealthComponent()
 	  MaxHealth(100.f),
 	  CurrentHealth(100.f),
 	  LethalHealth(0.f),
-	  DamageDelay(0.f),
-	  bTookDamage(false)
+	  DamageDelay(0.f)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -49,14 +48,17 @@ EHealthAssignmentResult UHealthComponent::Damage(float DamageAmount)
 
 	if (Result == EHealthAssignmentResult::Ok)
 	{
-		if (bBurstProtection && bTookDamage)
+		if (bBurstProtection && GetWorld()->GetTimerManager().IsTimerActive(DamageCooldownHandle))
 		{
-			GetWorld()->GetTimerManager().SetTimer(DamageCooldownHandle, this, &UHealthComponent::ResetDamageCooldown, DamageDelay);
 			return EHealthAssignmentResult::None;
 		}
 
 		CurrentHealth -= DamageAmount;
-		bTookDamage = true;
+
+		if (bBurstProtection)
+		{
+			GetWorld()->GetTimerManager().SetTimer(DamageCooldownHandle, DamageDelay, false);
+		}
 
 		OnHealthChanged.Broadcast(CurrentHealth);
 
@@ -129,14 +131,4 @@ EHealthAssignmentResult UHealthComponent::DiagnosticCheck(float Health) const
 	}
 
 	return EHealthAssignmentResult::Ok;
-}
-
-void UHealthComponent::ResetDamageCooldown()
-{
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	if (TimerManager.IsTimerActive(DamageCooldownHandle))
-	{
-		TimerManager.ClearTimer(DamageCooldownHandle);
-		bTookDamage = false;
-	}
 }
