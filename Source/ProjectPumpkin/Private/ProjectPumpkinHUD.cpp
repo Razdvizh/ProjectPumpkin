@@ -10,7 +10,7 @@
 void AProjectPumpkinHUD::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	AProjectPumpkinPlayerController* PlayerController = AProjectPumpkinGameMode::GetPumpkinPlayerController(GetWorld());
 	UUserWidget* InGameWidget = CreateWidget<UInGameWidget>(PlayerController, InGameWidgetClass);
 	InGameWidget->AddToViewport(INT_MAX);
