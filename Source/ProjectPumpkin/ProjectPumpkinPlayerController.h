@@ -10,11 +10,14 @@
 * Strongly typed player controller for project-wide gamemode
 */
 UCLASS()
-class AProjectPumpkinPlayerController : public APlayerController
+class AProjectPumpkinPlayerController final : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
 	AProjectPumpkinPlayerController();
+
+private:
+	virtual void BeginPlay() override;
 
 };

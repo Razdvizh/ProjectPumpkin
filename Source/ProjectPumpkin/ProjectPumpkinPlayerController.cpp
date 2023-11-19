@@ -7,3 +7,11 @@ AProjectPumpkinPlayerController::AProjectPumpkinPlayerController()
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
 }
+
+void AProjectPumpkinPlayerController::BeginPlay()
+{
+	FInputModeGameAndUI InputMode;
+	InputMode.SetHideCursorDuringCapture(false);
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockInFullscreen);
+	SetInputMode(InputMode);
+}

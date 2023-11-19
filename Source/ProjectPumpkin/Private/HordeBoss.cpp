@@ -6,6 +6,7 @@
 #include "ProjectPumpkin/ProjectPumpkinCharacter.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "NiagaraComponent.h"
 #include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
@@ -38,6 +39,10 @@ AHordeBoss::AHordeBoss()
 	ExpandingSphere->SetVisibility(false);
 	ExpandingSphere->SetupAttachment(RootComponent);
 
+	ExpandingSphereFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Niagara"));
+	ExpandingSphereFX->SetupAttachment(CharacterMesh, TEXT("S_SlamEffect"));
+	ExpandingSphereFX->bAutoActivate = false;
+
 	ExpandingSphere->SetGenerateOverlapEvents(true);
 	ExpandingSphere->CanCharacterStepUpOn = ECB_No;
 	ExpandingSphere->SetCollisionProfileName(TEXT("Trigger"));
@@ -45,6 +50,8 @@ AHordeBoss::AHordeBoss()
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+	ExpandingSphere->PrimaryComponentTick.bCanEverTick = false;
+	ExpandingSphereFX->PrimaryComponentTick.bCanEverTick = true;
 }
 
 void AHordeBoss::Tick(float DeltaTime)
@@ -72,6 +79,7 @@ void AHordeBoss::Tick(float DeltaTime)
 	else
 	{
 		ExpandingSphere->SetSphereRadius(APPROX_BOSS_PUMPKIN_MESH_RADIUS);
+		ExpandingSphereFX->DeactivateImmediate();
 		GetCharacterMovement()->GravityScale = CachedGravityScale;
 	}
 }
@@ -94,6 +102,7 @@ void AHordeBoss::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 Pre
 
 	if (PrevMovementMode == EMovementMode::MOVE_Falling)
 	{
+		ExpandingSphereFX->ActivateSystem();
 		bNeedsToTick = true;
 	}
 	else

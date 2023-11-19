@@ -8,6 +8,7 @@
 
 class USphereComponent;
 class UPrimitiveComponent;
+class UNiagaraComponent;
 struct FTimerHandle;
 struct FHitResult;
 
@@ -24,6 +25,9 @@ public:
 	virtual void Interact_Implementation(AActor* Initiator) override;
 
 	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0) override;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Horde|Boss")
+	FORCEINLINE UNiagaraComponent* GetExpandingSphereFX() const { return ExpandingSphereFX; }
 
 	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
 	FORCEINLINE float GetJumpDelay() const { return JumpDelay; }
@@ -58,6 +62,9 @@ protected:
 	virtual void OnExpandingSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Boss")
+	UNiagaraComponent* ExpandingSphereFX;
+
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetJumpDelay, BlueprintSetter = SetJumpDelay, Category = "Horde|Boss", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Resting time between jumps. Zero means no jumping."))
 	float JumpDelay;
 

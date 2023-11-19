@@ -13,6 +13,7 @@ AFirepit::AFirepit() : bCanBeActivated(false)
 {
 	FireFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Fire"));
 	FireFX->SetupAttachment(Mesh, TEXT("S_fire"));
+	FireFX->bAutoActivate = false;
 
 	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
 
@@ -27,7 +28,6 @@ void AFirepit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FireFX->Deactivate();
 }
 
 void AFirepit::OnVolumeActivated(AActor* Activator)
