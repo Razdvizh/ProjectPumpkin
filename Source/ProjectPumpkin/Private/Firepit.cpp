@@ -34,7 +34,7 @@ void AFirepit::OnVolumeActivated(AActor* Activator)
 {
 	if (bCanBeActivated)
 	{
-		AProjectPumpkinGameMode::GetPumpkinPlayerController(GetWorld())->ConsoleCommand(TEXT("quit"));
+		AProjectPumpkinGameMode::GetPumpkinPlayerController(GetWorld())->ConsoleCommand(TEXT("open Menu"));
 	}
 }
 

@@ -27,7 +27,9 @@ public:
 
 	virtual void ShutdownModule() override;
 
+#if WITH_EDITOR
 	const UProjectPumpkinSettings* GetProjectPumpkinSettings() const;
+#endif
 
 private:
 	TSharedPtr<ISettingsSection> SettingsSection;

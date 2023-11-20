@@ -3,10 +3,10 @@
 
 #include "MainMenuWidget.h"
 #include "GameGuideWidget.h"
+#include "GameFramework/PlayerController.h"
 #include "CreditsWidget.h"
 #include "Components/Button.h"
 #include "Animation/WidgetAnimation.h"
-#include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 
 void UMainMenuWidget::NativeOnInitialized()
@@ -27,7 +27,7 @@ void UMainMenuWidget::NativeOnInitialized()
 void UMainMenuWidget::OnStartPlayClicked()
 {
 	PlayAnimation(Transition);
-	UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), GameLevel);
+	GetOwningPlayer()->ConsoleCommand(TEXT("open Menu"));
 }
 
 void UMainMenuWidget::OnHowToPlayClicked()

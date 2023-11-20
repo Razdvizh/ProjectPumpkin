@@ -22,8 +22,7 @@ UVineSubsystem::UVineSubsystem()
 
 void UVineSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
-	FProjectPumpkinModule* PumpkinModule = &FModuleManager::LoadModuleChecked<FProjectPumpkinModule>(TEXT("ProjectPumpkin"));
-	const UProjectPumpkinSettings* ProjectPumpkinSettings = PumpkinModule->GetProjectPumpkinSettings();
+	const UProjectPumpkinSettings* ProjectPumpkinSettings = GetDefault<UProjectPumpkinSettings>();
 
 	const float ActiveVinesRatio = ProjectPumpkinSettings->GetActiveVinesRatio();
 	const float NewZOffset = ProjectPumpkinSettings->GetNewZOffset();
