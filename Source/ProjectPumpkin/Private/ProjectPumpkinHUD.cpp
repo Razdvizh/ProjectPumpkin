@@ -2,16 +2,18 @@
 
 
 #include "ProjectPumpkinHUD.h"
-#include "ProjectPumpkin/ProjectPumpkinGameMode.h"
-#include "ProjectPumpkin/ProjectPumpkinPlayerController.h"
+#include "GameFramework/PlayerController.h"
 #include "Blueprint/UserWidget.h"
-#include "InGameWidget.h"
+#include "FrameWidget.h"
 
 void AProjectPumpkinHUD::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AProjectPumpkinPlayerController* PlayerController = AProjectPumpkinGameMode::GetPumpkinPlayerController(GetWorld());
-	UUserWidget* InGameWidget = CreateWidget<UInGameWidget>(PlayerController, InGameWidgetClass);
-	InGameWidget->AddToViewport(INT_MAX);
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	UUserWidget* InGameWidget = CreateWidget<UFrameWidget>(PlayerController, InGameWidgetClass);
+	if (InGameWidget)
+	{
+		InGameWidget->AddToViewport(INT_MAX);
+	}
 }

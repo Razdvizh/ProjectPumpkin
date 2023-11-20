@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "FrameWidget.h"
 #include "InGameWidget.generated.h"
 
 class UImage;
@@ -13,7 +13,7 @@ class UMaterialParameterCollection;
  * Widget that updates and visualizes health and grimoire status.
  */
 UCLASS()
-class PROJECTPUMPKIN_API UInGameWidget : public UUserWidget
+class PROJECTPUMPKIN_API UInGameWidget : public UFrameWidget
 {
 	GENERATED_BODY()
 	

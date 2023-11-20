@@ -19,7 +19,7 @@ struct FPropertyChangedEvent;
 * Project-wide gamemode with type safe access to its classes.
 */
 UCLASS(minimalapi)
-class AProjectPumpkinGameMode final : public AGameModeBase
+class AProjectPumpkinGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 

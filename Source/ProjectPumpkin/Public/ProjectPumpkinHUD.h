@@ -7,20 +7,20 @@
 #include "Templates/SubclassOf.h"
 #include "ProjectPumpkinHUD.generated.h"
 
-class UUserWidget;
+class UFrameWidget;
 
 /**
- * Strongly typed heads-up display for project-wide gamemode
+ * Strongly typed heads-up display for project-wide gamemode.
  */
 UCLASS()
-class PROJECTPUMPKIN_API AProjectPumpkinHUD final : public AHUD
+class PROJECTPUMPKIN_API AProjectPumpkinHUD : public AHUD
 {
 	GENERATED_BODY()
 	
-private:
+protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> InGameWidgetClass;
+	TSubclassOf<UFrameWidget> InGameWidgetClass;
 
 };

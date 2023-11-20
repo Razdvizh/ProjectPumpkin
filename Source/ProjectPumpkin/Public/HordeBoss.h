@@ -9,6 +9,7 @@
 class USphereComponent;
 class UPrimitiveComponent;
 class UNiagaraComponent;
+class USoundBase;
 struct FTimerHandle;
 struct FHitResult;
 
@@ -29,6 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Horde|Boss")
 	FORCEINLINE UNiagaraComponent* GetExpandingSphereFX() const { return ExpandingSphereFX; }
 
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Horde|Boss")
+	FORCEINLINE USoundBase* GetGroundImpactSound() const { return GroundImpactSound; }
+
 	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
 	FORCEINLINE float GetJumpDelay() const { return JumpDelay; }
 
@@ -40,6 +44,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Horde|Boss")
 	FORCEINLINE float GetMaxExpansionRadius() const { return MaxExpansionRadius; }
+
+	UFUNCTION(BlueprintCallable, Category = "Horde|Boss")
+	void SetGroundImpactSound(USoundBase* Sound);
 
 	UFUNCTION(BlueprintCallable, Category = "Horde|Boss")
 	void SetJumpDelay(float Delay);
@@ -64,6 +71,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Boss")
 	UNiagaraComponent* ExpandingSphereFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Horde|Boss")
+	USoundBase* GroundImpactSound;
 
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetJumpDelay, BlueprintSetter = SetJumpDelay, Category = "Horde|Boss", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Resting time between jumps. Zero means no jumping."))
 	float JumpDelay;

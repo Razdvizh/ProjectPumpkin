@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NiagaraComponent.h"
+#include "Sound/SoundBase.h"
 #include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
@@ -103,12 +104,23 @@ void AHordeBoss::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 Pre
 	if (PrevMovementMode == EMovementMode::MOVE_Falling)
 	{
 		ExpandingSphereFX->ActivateSystem();
+		if (GroundImpactSound)
+		{
+			const FVector SoundLocation = CharacterMesh->GetSocketLocation(TEXT("S_SlamEffect"));
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), GroundImpactSound, SoundLocation);
+		}
+		
 		bNeedsToTick = true;
 	}
 	else
 	{
 		bNeedsToTick = false;
 	}
+}
+
+void AHordeBoss::SetGroundImpactSound(USoundBase* Sound)
+{
+	GroundImpactSound = Sound;
 }
 
 void AHordeBoss::SetJumpDelay(float Delay)

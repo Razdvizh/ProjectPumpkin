@@ -30,6 +30,10 @@ void AGrimoire::OnVolumeActivated(AActor* Activator)
 	{
 		if (Firepit && BossSpawner)
 		{
+			BossSpawner->UnloadConfig();
+			BossSpawner->DoSpawning();
+			Firepit->MarkAsActivateable();
+
 			UVineSubsystem* VineSubsystem = GetWorld()->GetSubsystem<UVineSubsystem>();
 			VineSubsystem->SetActivationTime(VineActivationTime);
 
@@ -48,10 +52,6 @@ void AGrimoire::OnVolumeActivated(AActor* Activator)
 					VineSubsystem->ActivateVine(InactiveVines[i]);
 				}
 			}
-
-			BossSpawner->UnloadConfig();
-			BossSpawner->DoSpawning();
-			Firepit->MarkAsActivateable();
 		}
 
 		OnGrimoirePickedUp.Broadcast();

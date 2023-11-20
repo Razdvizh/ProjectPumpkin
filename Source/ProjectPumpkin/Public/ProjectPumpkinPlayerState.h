@@ -7,10 +7,10 @@
 #include "ProjectPumpkinPlayerState.generated.h"
 
 /**
- * Strongly typed player state for project-wide gamemode
+ * Strongly typed player state for project-wide gamemode.
  */
 UCLASS()
-class PROJECTPUMPKIN_API AProjectPumpkinPlayerState final : public APlayerState
+class PROJECTPUMPKIN_API AProjectPumpkinPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 

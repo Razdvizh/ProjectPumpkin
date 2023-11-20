@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "ProjectPumpkin/ProjectPumpkinGameMode.h"
 #include "ProjectPumpkin/ProjectPumpkinPlayerController.h"
+#include "Sound/SoundBase.h"
 #include "MassAgentComponent.h"
 #include "HealthComponent.h"
 #include "DamageInfo.h"
@@ -31,6 +32,12 @@
 #include "Engine/World.h"
 #include "Engine/DamageEvents.h"
 #pragma endregion Engine
+#pragma region Sound
+#include "Audio/ActorSoundParameterInterface.h"
+#include "AudioDeviceHandle.h"
+#include "AudioDevice.h"
+#include "AudioParameter.h"
+#pragma endregion Sound
 #pragma region Misc
 #include "ProjectPumpkin.h"
 #include "TimerManager.h"
@@ -96,6 +103,16 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& Obj
 	CameraBoom->PrimaryComponentTick.bCanEverTick = false;
 	TopDownCameraComponent->PrimaryComponentTick.bCanEverTick = false;
 	MassAgent->PrimaryComponentTick.bCanEverTick = false;
+}
+
+void AProjectPumpkinCharacter::SetProjectileSound(USoundBase* Sound)
+{
+	ProjectileSound = Sound;
+}
+
+void AProjectPumpkinCharacter::SetProjectileClass(TSubclassOf<AProjectile> Class)
+{
+	ProjectileClass = Class;
 }
 
 void AProjectPumpkinCharacter::Interact_Implementation(AActor* Initiator)
@@ -220,6 +237,23 @@ void AProjectPumpkinCharacter::Shoot()
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = this;
 
+	UWorld* World = GetWorld();
+	if (GEngine->UseSound() && World->bAllowAudioPlayback && ProjectileSound)
+	{
+		if (FAudioDeviceHandle AudioDevice = World->GetAudioDevice())
+		{
+			TArray<FAudioParameter> Params;
+			UActorSoundParameterInterface::Fill(this, Params);
+
+			float VolumeMultiplier = 1.f;
+			float PitchMultiplier = 1.f;
+			float StartTime = 0.01f;
+			FVector SoundLocation = SpawnTransform.GetLocation();
+			FRotator SoundRotation = SpawnTransform.GetRotation().Rotator();
+			AudioDevice->PlaySoundAtLocation(ProjectileSound, World, VolumeMultiplier, PitchMultiplier, StartTime, 
+				SoundLocation, SoundRotation, nullptr, nullptr, &Params, this);
+		}
+	}
 	AProjectile* Projectile = Cast<AProjectile>(GetWorld()->SpawnActor(ProjectileClass, &SpawnTransform, SpawnParams));
 	UProjectileMovementComponent* ProjectileMovement = Projectile->GetProjectileMovement();
 	ProjectileMovement->Velocity += GetCharacterMovement()->Velocity;

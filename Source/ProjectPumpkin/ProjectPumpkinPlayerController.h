@@ -7,17 +7,17 @@
 #include "ProjectPumpkinPlayerController.generated.h"
 
 /*
-* Strongly typed player controller for project-wide gamemode
+* Strongly typed player controller for project-wide gamemode.
 */
 UCLASS()
-class AProjectPumpkinPlayerController final : public APlayerController
+class AProjectPumpkinPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
 	AProjectPumpkinPlayerController();
 
-private:
+protected:
 	virtual void BeginPlay() override;
 
 };

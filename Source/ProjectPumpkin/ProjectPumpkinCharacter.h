@@ -12,6 +12,7 @@ class UInputMappingContext;
 class UInputAction;
 class UHealthComponent;
 class UMassAgentComponent;
+class USoundBase;
 class AProjectile;
 struct FInputActionValue;
 struct FTimerHandle;
@@ -31,6 +32,18 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Game")
 	FORCEINLINE float GetRestartLevelDelay() const { return RestartLevelDelay; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Projectile")
+	FORCEINLINE USoundBase* GetProjectileSound() const { return ProjectileSound; }
+
+	UFUNCTION(BlueprintPure, Category = "Projectile")
+	FORCEINLINE TSubclassOf<AProjectile> GetProjectileClass() const { return ProjectileClass; }
+
+	UFUNCTION(BlueprintCallable, Category = "Projectile")
+	void SetProjectileSound(USoundBase* Sound);
+
+	UFUNCTION(BlueprintCallable, Category = "Projectile")
+	void SetProjectileClass(TSubclassOf<AProjectile> Class);
 
 	virtual void Interact_Implementation(AActor* Initiator) override;
 
@@ -58,13 +71,16 @@ private:
 	void OnLookCompleted();
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile", meta = (ToolTip = "Sound to play when firing projectile."))
+	USoundBase* ProjectileSound;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (ToolTip = "Offset for character rotation during look towards the mouse cursor."))
 	FRotator LookOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetRestartLevelDelay, Category = "Game", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "Delay before level would be restarted. Zero means no restart."))
 	float RestartLevelDelay;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile", meta = (DisplayName = "Projectile", ToolTip = "Projectile to spawn."))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetProjectileClass, Category = "Projectile", meta = (DisplayName = "Projectile", ToolTip = "Projectile to spawn."))
 	TSubclassOf<AProjectile> ProjectileClass;
 
 	/** Top down camera */
