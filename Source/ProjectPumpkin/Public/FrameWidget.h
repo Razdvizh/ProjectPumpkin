@@ -25,6 +25,8 @@ public:
 	bool IsPlayingMusic() const;
 
 protected:
+	virtual void NativeConstruct() override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level")
 	USoundCue* BackgroundMusic;
 

@@ -3,8 +3,7 @@
 
 #include "FrameWidget.h"
 #include "Sound/SoundCue.h"
-#include "Kismet/GameplayStatics.h"
-#include "TimerManager.h"
+#include "ProjectPumpkinGameInstance.h"
 
 UFrameWidget::UFrameWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -16,10 +15,27 @@ void UFrameWidget::SetPlayMusic(bool bShouldPlay)
 	if (BackgroundMusic)
 	{
 		BackgroundMusic->VolumeMultiplier = bShouldPlay ? 1.f : 0.f;
+		if (UProjectPumpkinGameInstance* GameInstance = GetGameInstance<UProjectPumpkinGameInstance>())
+		{
+			GameInstance->VolumeMultiplier = BackgroundMusic->VolumeMultiplier;
+		}
 	}
 }
 
 bool UFrameWidget::IsPlayingMusic() const
 {
 	return BackgroundMusic && BackgroundMusic->VolumeMultiplier > 0.f;
+}
+
+void UFrameWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (UProjectPumpkinGameInstance* GameInstance = GetGameInstance<UProjectPumpkinGameInstance>())
+	{
+		if (BackgroundMusic)
+		{
+			BackgroundMusic->VolumeMultiplier = GameInstance->VolumeMultiplier;
+		}
+	}
 }
