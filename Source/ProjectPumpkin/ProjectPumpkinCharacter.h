@@ -63,6 +63,8 @@ protected:
 
 	void Shoot();
 
+	void PauseGame();
+
 private:
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 	void DrawCursorHitLocation(const FVector& HitLocation);
@@ -106,6 +108,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
 	UInputAction* ShootAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = true))
+	UInputAction* PauseAction;
 
 	FTimerHandle RestartLevelHandle;
 

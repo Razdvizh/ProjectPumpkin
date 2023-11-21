@@ -8,7 +8,7 @@ void UFrameWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (BackgroundMusic)
+	if (GEngine->UseSound() && BackgroundMusic)
 	{
 		//Using the timer instead looping check in the sound cue to fix possibility of sound being orphaned.
 		const float Rate = BackgroundMusic->GetDuration();

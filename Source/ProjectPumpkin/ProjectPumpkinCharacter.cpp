@@ -154,7 +154,9 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Completed, this, &AProjectPumpkinCharacter::OnLookCompleted);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Canceled, this, &AProjectPumpkinCharacter::OnLookCompleted);
 
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AProjectPumpkinCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &AProjectPumpkinCharacter::Shoot);
+
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &AProjectPumpkinCharacter::PauseGame);
 	}
 }
 
@@ -257,6 +259,18 @@ void AProjectPumpkinCharacter::Shoot()
 	AProjectile* Projectile = Cast<AProjectile>(GetWorld()->SpawnActor(ProjectileClass, &SpawnTransform, SpawnParams));
 	UProjectileMovementComponent* ProjectileMovement = Projectile->GetProjectileMovement();
 	ProjectileMovement->Velocity += GetCharacterMovement()->Velocity;
+}
+
+void AProjectPumpkinCharacter::PauseGame()
+{
+	AProjectPumpkinPlayerController* PlayerController = AProjectPumpkinGameMode::GetPumpkinPlayerController(GetWorld());
+	if (GetWorld()->IsPaused())
+	{
+		PlayerController->SetPause(false);
+		return;
+	}
+
+	PlayerController->SetPause(true);
 }
 
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)

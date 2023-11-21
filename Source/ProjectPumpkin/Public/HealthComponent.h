@@ -93,7 +93,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetLethalHealth, Category = "Health Component", meta = (AllowPrivateAccess = true, ClampMin = 0.f, UIMin = 0.f, ToolTip = "Indicates an amount of health at which the actor should be killed or in a death state. Component does not force the actor to be destroyed when this value is reached."))
 	float LethalHealth;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetDamageDelay, Category = "Health Component", meta = (AllowPrivateAccess = true, DisplayName = "DamageCooldown", EditCondition = bBurstProtection, EditConditionHides, Units = "s", ClampMin = 0.f, UIMin = 0.f, ToolTip = "Cooldown for damage input. New damage input during cooldown will refresh it. Has effect only when burst protection is active."))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, BlueprintGetter = GetDamageDelay, Category = "Health Component", meta = (AllowPrivateAccess = true, DisplayName = "Damage Cooldown", EditCondition = bBurstProtection, EditConditionHides, Units = "s", ClampMin = 0.f, UIMin = 0.f, ToolTip = "Cooldown for damage input. New damage input during cooldown will refresh it. Has effect only when burst protection is active."))
 	float DamageDelay;
 
 	FTimerHandle DamageCooldownHandle;
