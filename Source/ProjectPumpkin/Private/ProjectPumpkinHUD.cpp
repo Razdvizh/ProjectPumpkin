@@ -14,6 +14,6 @@ void AProjectPumpkinHUD::BeginPlay()
 	UUserWidget* InGameWidget = CreateWidget<UFrameWidget>(PlayerController, InGameWidgetClass);
 	if (InGameWidget)
 	{
-		InGameWidget->AddToViewport(INT_MAX);
+		InGameWidget->AddToViewport(INT_MIN);
 	}
 }

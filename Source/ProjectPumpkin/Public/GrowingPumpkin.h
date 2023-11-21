@@ -91,6 +91,7 @@ protected:
 	float PauseBetweenStages;
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = "Growing Pumpkin")
 	EGrowingStage Stage;
 
 	float CurrentGrowingTime;

@@ -7,7 +7,6 @@
 #include "CreditsWidget.h"
 #include "Components/Button.h"
 #include "Animation/WidgetAnimation.h"
-#include "Engine/World.h"
 
 void UMainMenuWidget::NativeOnInitialized()
 {
@@ -27,7 +26,7 @@ void UMainMenuWidget::NativeOnInitialized()
 void UMainMenuWidget::OnStartPlayClicked()
 {
 	PlayAnimation(Transition);
-	GetOwningPlayer()->ConsoleCommand(TEXT("open Menu"));
+	GetOwningPlayer()->ConsoleCommand(TEXT("open TopDownMap"));
 }
 
 void UMainMenuWidget::OnHowToPlayClicked()

@@ -39,9 +39,6 @@ protected:
 	virtual void OnReturnToMenuClicked();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level")
-	TSoftObjectPtr<UWorld> GameLevel;
-
 	UPROPERTY(meta = (BindWidget))
 	UGameGuideWidget* GameGuide;
 
