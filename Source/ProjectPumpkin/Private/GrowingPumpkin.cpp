@@ -16,6 +16,7 @@
 
 constexpr int32 NUM_STAGES = 3;
 constexpr float KEY_TIME_TOLERANCE = 2e-3f;
+constexpr float MESH_LOCATION_MULTIPLIER = 4.f; //Offset to InitialLocationZ when increasing actor location in tick to match with mesh proportions.
 
 // Sets default values
 AGrowingPumpkin::AGrowingPumpkin()
@@ -55,8 +56,9 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 
 			//Offset Z position after scaling up.
 			FVector ActorLocation = GetActorLocation();
-			ActorLocation += FVector(0.f, 0.f, (InitialCurveScale.Z * Scale.Z));
-			SetActorLocation(ActorLocation);
+			const FVector TargetLocation = FVector(ActorLocation.X, ActorLocation.Y, ((InitialLocationZ * MESH_LOCATION_MULTIPLIER) * Scale.Z));
+			const FVector CurrentLocation = FMath::Lerp(ActorLocation, TargetLocation, TimeRatio);
+			SetActorLocation(CurrentLocation);
 
 			const FRichCurve FirstCurve = GrowingCurve->FloatCurves[0];
 			const FKeyHandle FirstKey = FirstCurve.GetFirstKeyHandle();
