@@ -23,10 +23,3 @@ bool UFrameWidget::IsPlayingMusic() const
 {
 	return BackgroundMusic && BackgroundMusic->VolumeMultiplier > 0.f;
 }
-
-void UFrameWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	PlaySound(BackgroundMusic);
-}
