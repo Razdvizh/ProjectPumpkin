@@ -16,11 +16,16 @@ UCLASS()
 class PROJECTPUMPKIN_API AProjectPumpkinHUD : public AHUD
 {
 	GENERATED_BODY()
+
+public:
+	UFrameWidget* GetMainframeWidget() const;
 	
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UFrameWidget> InGameWidgetClass;
+	TSubclassOf<UFrameWidget> MainframeWidgetClass;
+
+	TSet<UUserWidget*> ActiveWidgets;
 
 };

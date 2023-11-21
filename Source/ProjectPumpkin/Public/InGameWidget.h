@@ -20,10 +20,10 @@ class PROJECTPUMPKIN_API UInGameWidget : public UFrameWidget
 public:
 	UInGameWidget(const FObjectInitializer& ObjectInitializer);
 
+	virtual void SynchronizeProperties() override;
+
 protected:
 	virtual void NativeOnInitialized() override;
-
-	virtual void SynchronizeProperties() override;
 
 	UFUNCTION()
 	void UpdateHealth(float NewHealth);

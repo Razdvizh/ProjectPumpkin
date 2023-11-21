@@ -23,6 +23,17 @@ void UMainMenuWidget::NativeOnInitialized()
 	CreditsSection->SetVisibility(ESlateVisibility::Hidden);
 }
 
+FReply UMainMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey().IsDigital() && ReturnToMenu->IsVisible())
+	{
+		OnReturnToMenuClicked();
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
+}
+
 void UMainMenuWidget::OnStartPlayClicked()
 {
 	PlayAnimation(Transition);

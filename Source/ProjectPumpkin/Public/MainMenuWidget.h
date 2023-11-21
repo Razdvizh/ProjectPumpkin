@@ -11,6 +11,9 @@ class UGameGuideWidget;
 class UCreditsWidget;
 class UButton;
 class UWidgetAnimation;
+class FReply;
+struct FKeyEvent;
+struct FGeometry;
 
 /**
  * Widget that represents main menu interface.
@@ -19,9 +22,11 @@ UCLASS()
 class PROJECTPUMPKIN_API UMainMenuWidget : public UFrameWidget
 {
 	GENERATED_BODY()
-	
+
 protected:
 	virtual void NativeOnInitialized() override;
+
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Menu Widget")
 	virtual void OnStartPlayClicked();

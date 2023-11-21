@@ -11,6 +11,7 @@
 #include "SlowingVine.h"
 #include "EngineUtils.h"
 #include "ProjectPumpkin/ProjectPumpkinCharacter.h"
+#include "Interactable.h"
 
 // Sets default values
 AGrimoire::AGrimoire() 
@@ -26,37 +27,39 @@ AGrimoire::AGrimoire()
 
 void AGrimoire::OnVolumeActivated(AActor* Activator)
 {
-	if (AProjectPumpkinCharacter* Character = Cast<AProjectPumpkinCharacter>(Activator))
+	if (Activator->Implements<UInteractable>())
 	{
-		if (Firepit && BossSpawner)
+		IInteractable::Execute_Interact(Activator, this);
+	}
+
+	if (Firepit && BossSpawner)
+	{
+		BossSpawner->UnloadConfig();
+		BossSpawner->DoSpawning();
+		Firepit->MarkAsActivateable();
+
+		UVineSubsystem* VineSubsystem = GetWorld()->GetSubsystem<UVineSubsystem>();
+		VineSubsystem->SetActivationTime(VineActivationTime);
+
+		if (RemainingVinesRatio <= 0.f)
 		{
-			BossSpawner->UnloadConfig();
-			BossSpawner->DoSpawning();
-			Firepit->MarkAsActivateable();
+			VineSubsystem->ActivateAllVines();
+		}
+		else
+		{
+			TArray<ASlowingVine*> InactiveVines;
+			VineSubsystem->GetInactiveVines(InactiveVines);
+			int32 Num = InactiveVines.Num();
 
-			UVineSubsystem* VineSubsystem = GetWorld()->GetSubsystem<UVineSubsystem>();
-			VineSubsystem->SetActivationTime(VineActivationTime);
-
-			if (RemainingVinesRatio <= 0.f)
+			for (int32 i = FMath::RoundToInt32(Num * RemainingVinesRatio); i < Num; i++)
 			{
-				VineSubsystem->ActivateAllVines();
-			}
-			else
-			{
-				TArray<ASlowingVine*> InactiveVines;
-				VineSubsystem->GetInactiveVines(InactiveVines);
-				int32 Num = InactiveVines.Num();
-
-				for (int32 i = FMath::RoundToInt32(Num * RemainingVinesRatio); i < Num; i++)
-				{
-					VineSubsystem->ActivateVine(InactiveVines[i]);
-				}
+				VineSubsystem->ActivateVine(InactiveVines[i]);
 			}
 		}
-
-		OnGrimoirePickedUp.Broadcast();
-		Destroy();
 	}
+
+	OnGrimoirePickedUp.Broadcast();
+	Destroy();
 }
 
 void AGrimoire::OnVolumeDeactivated(AActor* Activator)

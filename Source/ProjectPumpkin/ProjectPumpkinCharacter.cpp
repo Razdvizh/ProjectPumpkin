@@ -19,6 +19,7 @@
 #include "HordeCharacter.h"
 #include "HordeBoss.h"
 #include "Projectile.h"
+#include "Grimoire.h"
 #pragma endregion Gameplay
 #pragma region Input
 #include "EnhancedInputComponent.h"
@@ -60,7 +61,8 @@ AProjectPumpkinCharacter::AProjectPumpkinCharacter(const FObjectInitializer& Obj
 	  LookOffset(0.f, 180.f, 0.f),
 	  RestartLevelDelay(3.f),
 	  ProjectileClass(AProjectile::StaticClass()),
-	  bIsLooking(false)
+	  bIsLooking(false),
+      bSpawnDoubleProjectile(false)
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -117,6 +119,11 @@ void AProjectPumpkinCharacter::SetProjectileClass(TSubclassOf<AProjectile> Class
 
 void AProjectPumpkinCharacter::Interact_Implementation(AActor* Initiator)
 {
+	if (Initiator->IsA<AGrimoire>())
+	{
+		bSpawnDoubleProjectile = true;
+	}
+
 	const FDamageInfo* DamageInfo = DamageInfoMap.Find(Initiator->GetClass());
 	if (DamageInfo)
 	{
@@ -132,7 +139,7 @@ void AProjectPumpkinCharacter::BeginPlay()
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			Subsystem->AddMappingContext(DefaultMappingContext, 1);
 		}
 
 		PlayerController->SetControlRotation(CameraBoom->GetComponentRotation());
@@ -155,8 +162,6 @@ void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* Player
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Canceled, this, &AProjectPumpkinCharacter::OnLookCompleted);
 
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &AProjectPumpkinCharacter::Shoot);
-
-		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &AProjectPumpkinCharacter::PauseGame);
 	}
 }
 
@@ -232,8 +237,8 @@ void AProjectPumpkinCharacter::Look()
 
 void AProjectPumpkinCharacter::Shoot()
 {
-	const FTransform HandTransform = GetMesh()->GetBoneTransform(TEXT("hand_r"), RTS_World);
-	const FTransform SpawnTransform = FTransform(GetActorRotation(), HandTransform.GetLocation(), HandTransform.GetScale3D());
+	FTransform HandTransform = GetMesh()->GetBoneTransform(TEXT("hand_r"), RTS_World);
+	FTransform SpawnTransform = FTransform(GetActorRotation(), HandTransform.GetLocation(), HandTransform.GetScale3D());
 	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
@@ -256,21 +261,21 @@ void AProjectPumpkinCharacter::Shoot()
 				SoundLocation, SoundRotation, nullptr, nullptr, &Params, this);
 		}
 	}
-	AProjectile* Projectile = Cast<AProjectile>(GetWorld()->SpawnActor(ProjectileClass, &SpawnTransform, SpawnParams));
-	UProjectileMovementComponent* ProjectileMovement = Projectile->GetProjectileMovement();
-	ProjectileMovement->Velocity += GetCharacterMovement()->Velocity;
-}
 
-void AProjectPumpkinCharacter::PauseGame()
-{
-	AProjectPumpkinPlayerController* PlayerController = AProjectPumpkinGameMode::GetPumpkinPlayerController(GetWorld());
-	if (GetWorld()->IsPaused())
+	const auto ConstructProjectile = [this](const FTransform& Transform, const FActorSpawnParameters& Params)
 	{
-		PlayerController->SetPause(false);
-		return;
-	}
+		AProjectile* Projectile = Cast<AProjectile>(GetWorld()->SpawnActor(ProjectileClass, &Transform, Params));
+		UProjectileMovementComponent* ProjectileMovement = Projectile->GetProjectileMovement();
+		ProjectileMovement->Velocity += GetCharacterMovement()->Velocity;
+	};
 
-	PlayerController->SetPause(true);
+	ConstructProjectile(SpawnTransform, SpawnParams);
+	if (bSpawnDoubleProjectile)
+	{
+		HandTransform = GetMesh()->GetBoneTransform(TEXT("hand_l"), RTS_World);
+		SpawnTransform = FTransform(GetActorRotation(), HandTransform.GetLocation(), HandTransform.GetScale3D());
+		ConstructProjectile(SpawnTransform, SpawnParams);
+	}
 }
 
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
