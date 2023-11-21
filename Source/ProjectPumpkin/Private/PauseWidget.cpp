@@ -25,10 +25,7 @@ void UPauseWidget::NativeConstruct()
 	PlayAnimation(BlurIn);
 	if (UFrameWidget* FrameWidget = AProjectPumpkinGameMode::GetPumpkinHUD(GetWorld())->GetMainframeWidget())
 	{
-		if (!FrameWidget->IsPlayingMusic())
-		{
-			ToggleMusic->SetIsChecked(false);
-		}
+		ToggleMusic->SetIsChecked(FrameWidget->IsPlayingMusic());
 	}
 }
 

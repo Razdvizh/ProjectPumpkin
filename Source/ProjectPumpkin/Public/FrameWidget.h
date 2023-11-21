@@ -6,9 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "FrameWidget.generated.h"
 
-class USoundBase;
-class USoundMix;
-class USoundClass;
+class USoundCue;
 struct FTimerHandle;
 
 /**
@@ -30,17 +28,6 @@ protected:
 	virtual void NativeConstruct() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level")
-	USoundBase* BackgroundMusic;
-
-	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundMix* MusicMix;
-
-	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundClass* MusicSoundClass;
-
-private:
-	void StartMusicLoop();
-
-	FTimerHandle LoopSoundHandle;
+	USoundCue* BackgroundMusic;
 
 };
