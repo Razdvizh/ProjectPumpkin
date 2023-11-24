@@ -16,18 +16,18 @@
 
 constexpr int32 NUM_STAGES = 3;
 constexpr float KEY_TIME_TOLERANCE = 2e-3f;
-constexpr float MESH_LOCATION_MULTIPLIER = 4.f; //Offset to InitialLocationZ when increasing actor location in tick to match with mesh proportions.
 
 // Sets default values
 AGrowingPumpkin::AGrowingPumpkin()
 	: GrowingCurve(),
 	GrowingTime(5.f),
 	PauseBetweenStages(0.f),
+	MeshLocationMultiplier(1.f),
 	Stage(EGrowingStage::Small),
 	CurrentGrowingTime(0.f),
 	bNeedsToTick(false),
 	InitialCurveScale(FVector::ZeroVector),
-	InitialLocationZ(0)
+	InitialLocation(FVector::ZeroVector)
 {
 	ActivationVolume->GetActivatorClasses().Add(AProjectPumpkinCharacter::StaticClass());
 	StageHeal.Add(EGrowingStage::Medium, 1.f);
@@ -44,51 +44,44 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CurrentGrowingTime < GrowingTime && bNeedsToTick)
+	const bool bCanTick = CurrentGrowingTime < GrowingTime && bNeedsToTick && !GetWorld()->GetTimerManager().IsTimerActive(StagePauseHandle);
+	if (bCanTick)
 	{
-		if (!GetWorld()->GetTimerManager().IsTimerActive(StagePauseHandle))
-		{
-			CurrentGrowingTime += DeltaTime;
-			const float TimeRatio = FMath::Clamp(CurrentGrowingTime / GrowingTime, 0.f, 1.f);
+		CurrentGrowingTime += DeltaTime;
+		const float TimeRatio = FMath::Clamp(CurrentGrowingTime / GrowingTime, 0.f, 1.f);
 				
-			const FVector Scale = GrowingCurve->GetVectorValue(TimeRatio);
-			SetActorScale3D(Scale);
+		const FVector Scale = GrowingCurve->GetVectorValue(TimeRatio);
+		SetActorScale3D(Scale);
 
-			//Offset Z position after scaling up.
-			FVector ActorLocation = GetActorLocation();
-			const FVector TargetLocation = FVector(ActorLocation.X, ActorLocation.Y, ((InitialLocationZ * MESH_LOCATION_MULTIPLIER) * Scale.Z));
-			const FVector CurrentLocation = FMath::Lerp(ActorLocation, TargetLocation, TimeRatio);
-			SetActorLocation(CurrentLocation);
+		//Offset Z position after scaling up.
+		const FVector TargetLocation = FVector(InitialLocation.X, InitialLocation.Y, (InitialLocation.Z * Scale.Z) * MeshLocationMultiplier);
+		const FVector CurrentLocation = FMath::Lerp(InitialLocation, TargetLocation, TimeRatio);
+		SetActorLocation(CurrentLocation);
 
-			const FRichCurve FirstCurve = GrowingCurve->FloatCurves[0];
-			const FKeyHandle FirstKey = FirstCurve.GetFirstKeyHandle();
-			const bool bKeyExists = FirstCurve.KeyExistsAtTime(TimeRatio, KEY_TIME_TOLERANCE);
-			const bool bIsFirstKey = FirstKey == FirstCurve.FindKey(TimeRatio, KEY_TIME_TOLERANCE);
-			if (bKeyExists && !bIsFirstKey)
+		const FRichCurve FirstCurve = GrowingCurve->FloatCurves[0];
+		const FKeyHandle FirstKey = FirstCurve.GetFirstKeyHandle();
+		const bool bKeyExists = FirstCurve.KeyExistsAtTime(TimeRatio, KEY_TIME_TOLERANCE);
+		const bool bIsFirstKey = FirstKey == FirstCurve.FindKey(TimeRatio, KEY_TIME_TOLERANCE);
+		if (bKeyExists && !bIsFirstKey)
+		{
+			switch (Stage)
 			{
-				switch (Stage)
-				{
-				case EGrowingStage::None:
-					checkf(false, TEXT("EGrowingStage::None was used. It should never be used to indicate growing state."));
-					break;
-				case EGrowingStage::Small:
-					Stage = EGrowingStage::Medium;
-					break;
-				case EGrowingStage::Medium:
-					Stage = EGrowingStage::Large;
-					break;
-				case EGrowingStage::Large:
-					break;
-				default:
-					check(false);
-				}
+			case EGrowingStage::None:
+				checkf(false, TEXT("EGrowingStage::None was used. It should never be used to indicate growing state."));
+				break;
+			case EGrowingStage::Small:
+				Stage = EGrowingStage::Medium;
+				break;
+			case EGrowingStage::Medium:
+				Stage = EGrowingStage::Large;
+				break;
+			case EGrowingStage::Large:
+				break;
+			default:
+				check(false);
+			}
 
-				OnGrowingStageReached.Broadcast(Stage);
-			}
-			else if (bIsFirstKey)
-			{
-				OnGrowingStageReached.Broadcast(Stage);
-			}
+			OnGrowingStageReached.Broadcast(Stage);
 		}
 	}
 	else
@@ -156,7 +149,7 @@ void AGrowingPumpkin::ResetGrowth()
 	bNeedsToTick = false;
 	SetActorScale3D(InitialCurveScale);
 	CurrentGrowingTime = 0.f;
-	SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, InitialLocationZ));
+	SetActorLocation(InitialLocation);
 	Stage = EGrowingStage::Small;
 
 	OnGrowingStageReached.Broadcast(Stage);
@@ -206,7 +199,7 @@ void AGrowingPumpkin::BeginPlay()
 	InitialCurveScale = GrowingCurve->GetVectorValue(0.f);
 	SetActorScale3D(InitialCurveScale);
 
-	InitialLocationZ = GetActorLocation().Z;
+	InitialLocation = GetActorLocation();
 
 	StartGrowth();
 }

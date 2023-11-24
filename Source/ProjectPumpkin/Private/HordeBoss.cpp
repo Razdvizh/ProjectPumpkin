@@ -89,6 +89,7 @@ void AHordeBoss::Interact_Implementation(AActor* Initiator)
 {
 	if (Initiator->IsA<AProjectPumpkinCharacter>())
 	{
+		Super::Interact_Implementation(Initiator);
 		Jump();
 	}
 	if (Initiator->IsA<AProjectile>())

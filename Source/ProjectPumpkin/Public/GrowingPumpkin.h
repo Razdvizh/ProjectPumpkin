@@ -90,6 +90,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetPauseBetweenStages, BlueprintSetter = SetPauseBetweenStages, Category = "Growing Pumpkin", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "How long the pumpkin will stay at the stage before continuing growing. Zero means no pause."))
 	float PauseBetweenStages;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Growing Pumpkin", meta = (ToolTip = "Multiplier that is applied to actor Z location when growing."))
+	float MeshLocationMultiplier;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Growing Pumpkin")
 	EGrowingStage Stage;
@@ -100,7 +103,7 @@ private:
 
 	FVector InitialCurveScale;
 
-	double InitialLocationZ;
+	FVector InitialLocation;
 
 	FTimerHandle StagePauseHandle;
 

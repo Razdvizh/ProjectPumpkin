@@ -26,6 +26,7 @@ AProjectile::AProjectile()
 
 	ProjectileFX->SetupAttachment(Collision);
 	ProjectileFX->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ProjectileFX->CanCharacterStepUpOn = ECB_No;
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->SetUpdatedComponent(Collision);
