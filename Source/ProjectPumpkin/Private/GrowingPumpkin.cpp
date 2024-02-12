@@ -87,6 +87,7 @@ void AGrowingPumpkin::Tick(float DeltaTime)
 	else
 	{
 		bNeedsToTick = false;
+		CurrentGrowingTime = 0.f;
 	}
 }
 

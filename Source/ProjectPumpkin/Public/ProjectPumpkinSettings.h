@@ -38,7 +38,7 @@ private:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ClampMin = 0.f, UIMin = 0.f, Units = "s", ToolTip = "How long it will take to activate vines after the activation was requested."))
 	float ActivationTime;
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ClampMin = 0.f, UIMin = 0.f, ToolTip = "How close the height of inactive vine to its original height. Zero means as down as possible."))
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ClampMin = 0.f, UIMin = 0.f, ToolTip = "How close the height of inactive vine to its original height. Zero means as down as possible. This is an offset of World KillZ value."))
 	float NewZOffset;
 
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Slowing Vines", meta = (AllowPrivateAccess = true, ToolTip = "Defines the manner in which inactive vine will reappear."))
