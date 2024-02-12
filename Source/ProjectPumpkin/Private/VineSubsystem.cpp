@@ -99,6 +99,7 @@ void UVineSubsystem::Tick(float DeltaTime)
 
 		VinesToActivate.Empty();
 		bNeedsToTick = false;
+		CurrentActivationTime = 0.f;
 	}
 }
 
