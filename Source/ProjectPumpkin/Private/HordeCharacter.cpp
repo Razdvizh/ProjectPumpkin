@@ -12,6 +12,7 @@
 #include "HealthComponent.h"
 #include "MassHordeHelpers.h"
 #include "Projectile.h"
+#include "HordeBoss.h"
 #pragma endregion Gameplay
 #pragma region Engine
 #include "Engine/DamageEvents.h"
@@ -46,16 +47,16 @@ AHordeCharacter::AHordeCharacter(const FObjectInitializer& ObjectInitializer)
 
 void AHordeCharacter::Interact_Implementation(AActor* Initiator)
 {
-	if (Initiator->IsA<AProjectPumpkinCharacter>())
+	if (Initiator->IsA<AProjectPumpkinCharacter>() || Initiator->IsA<AHordeBoss>())
 	{
-		AProjectPumpkinCharacter* PumpkinCharacter = static_cast<AProjectPumpkinCharacter*>(Initiator);
+		AMortalCharacter* Character = Cast<AMortalCharacter>(Initiator);
 
 		LaunchCharacter(GetLaunchVelocity_CustomArc(LaunchDistance, LaunchBoost, /*OverrideGravityZ=*/0.f, Arc), true, true);
 
 		const FDamageInfo* DamageInfo = DamageInfoMap.Find(Initiator->GetClass());
 		if (DamageInfo)
 		{
-			TakeDamage((*DamageInfo).DamageAmount, (*DamageInfo).DamageEvent, PumpkinCharacter->GetController(), PumpkinCharacter);
+			TakeDamage((*DamageInfo).DamageAmount, (*DamageInfo).DamageEvent, Character->GetController(), Character);
 		}
 	}
 	else if (Initiator->IsA<AProjectile>())
