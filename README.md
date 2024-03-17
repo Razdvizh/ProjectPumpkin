@@ -30,7 +30,7 @@ In the end well configured by game designers good and bad pumpkins contribute to
 
 >Related content: Widgets and [materials](https://github.com/Razdvizh/ProjectPumpkin/tree/main/Content/TopDown/UI/Assets/Materials)
 
-Project Pumpkin is fully written in C++ including widgets. Main benefit is UI/UX design by artists with no worrying about logic and interactions with other blueprints. Some elements are rendered and controled by through materials rather than regular progress bars. Materials help with customization and, while this is irrelevant for the Project Pumpkin, larger games may use this approach to delegate work from CPU to GPU, potentially increasing performance.
+Project Pumpkin is fully written in C++ including widgets. Main benefit is UI/UX design by artists with no worrying about logic and interactions with other blueprints. Some elements are rendered and controlled by through materials rather than regular progress bars. Materials help with customization and, while this is irrelevant for the Project Pumpkin, larger games may use this approach to delegate work from CPU to GPU, potentially increasing performance.
 
 <a id="Team"></a>
 # Team
