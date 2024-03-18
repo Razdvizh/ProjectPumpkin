@@ -23,9 +23,11 @@ Project Pumpkin uses new Unreal Engine 5 entity component system called `Mass` t
 
 >Related content: [Character](https://github.com/Razdvizh/ProjectPumpkin/blob/main/Source/ProjectPumpkin/ProjectPumpkinCharacter.h) and a lot more!
 
-Project Pumpkin's gameloop under the hood is classes, components, inheritance, polymorphism and interfaces all propagated to blueprints for quick iterations. While I and team was considering time limits, conclusion came that even game small as Project Pumpkin demands minimal architecture for its mechanics and fast, robust changes. Classes are fairly encapsulated and extendable, most of them also data-driven. 
+Project Pumpkin's gameloop under the hood is classes, components, inheritance, polymorphism and interfaces all propagated to blueprints for quick iterations. While I and team was considering time limits, conclusion came that even game small as Project Pumpkin demands minimal architecture for its mechanics and fast, robust changes. Classes are fairly encapsulated and extendable, most of them also data-driven.
 
-In the end well configured by game designers good and bad pumpkins contribute to interesting gameplay while tested and calibrated input feels smooth and natural.
+Other part is simple vector math and kinematics to make objects behave natural and fun for the player and predictable for the game designer.
+
+In the end game designers have wide options for configuring gameplay while code is tangible enough to reflect them and can be refactored or expanded relatively quicky when necessary.
 
 ## User Interface
 ![UI](https://github.com/Razdvizh/ProjectPumpkin/assets/114196034/d8366128-6f51-487f-96de-0fa6cac29f69)
