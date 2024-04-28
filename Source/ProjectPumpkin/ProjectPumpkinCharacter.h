@@ -64,9 +64,7 @@ protected:
 	void Shoot();
 
 private:
-#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 	void DrawCursorHitLocation(const FVector& HitLocation);
-#endif
 
 	void OnLookCompleted();
 

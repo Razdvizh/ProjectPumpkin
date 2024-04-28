@@ -278,14 +278,14 @@ void AProjectPumpkinCharacter::Shoot()
 	}
 }
 
-#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 void AProjectPumpkinCharacter::DrawCursorHitLocation(const FVector& HitLocation)
 {
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 	FString DebugMessage = FString::Printf(TEXT("HitLocation: %s"), *HitLocation.ToString());
 	GEngine->AddOnScreenDebugMessage(-1, /*TimeToDisplay=*/2.f, FColor::Cyan, DebugMessage);
 	DrawDebugPoint(GetWorld(), HitLocation, /*Size=*/3.f, FColor::Red, false, /*LifeTime=*/2.f);
-}
 #endif
+}
 
 void AProjectPumpkinCharacter::OnLookCompleted()
 {
