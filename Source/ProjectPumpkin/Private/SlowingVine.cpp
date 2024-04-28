@@ -29,7 +29,7 @@ void ASlowingVine::SetSpeedPenalty(float Penalty)
 	SpeedPenalty = Penalty;
 }
 
-void ASlowingVine::OnVolumeActivated(AActor* Activator)
+void ASlowingVine::OnActivated(AActor* Activator)
 {
 	ACharacter* Character = Cast<ACharacter>(Activator);
 	if (ensureMsgf(Character, TEXT("Slowing Vine was activated by %s which is not a character. No slowing will be performed."), *Activator->GetFName().ToString()))
@@ -50,7 +50,7 @@ void ASlowingVine::OnVolumeActivated(AActor* Activator)
 	}
 }
 
-void ASlowingVine::OnVolumeDeactivated(AActor* Activator)
+void ASlowingVine::OnDeactivated(AActor* Activator)
 {
 	if (CachedMovementComponent)
 	{

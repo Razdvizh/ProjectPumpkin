@@ -26,9 +26,9 @@ public:
 	FORCEINLINE void SetSpeedPenalty(float Penalty);
 
 protected:
-	virtual void OnVolumeActivated(AActor* Activator) override;
+	virtual void OnActivated(AActor* Activator) override;
 
-	virtual void OnVolumeDeactivated(AActor* Activator) override;
+	virtual void OnDeactivated(AActor* Activator) override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetSpeedPenalty, BlueprintSetter = SetSpeedPenalty, Category = "Vine", meta = (ClampMin = 0.f, UIMin = 0.f, ForceUnits = "cm/s", ToolTip = "The amount by which the character will be slowed down. Be careful with small numbers as character might not be able to escape!"))

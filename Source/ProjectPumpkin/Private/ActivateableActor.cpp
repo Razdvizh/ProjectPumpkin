@@ -25,12 +25,12 @@ AActivateableActor::AActivateableActor(const FObjectInitializer& ObjectInitializ
 	ActivationVolume->PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
-void AActivateableActor::OnVolumeActivated(AActor* Activator)
+void AActivateableActor::OnActivated(AActor* Activator)
 {
-	IActivateable::OnVolumeActivated(Activator);
+	IActivateable::OnActivated(Activator);
 }
 
-void AActivateableActor::OnVolumeDeactivated(AActor* Activator)
+void AActivateableActor::OnDeactivated(AActor* Activator)
 {
-	IActivateable::OnVolumeDeactivated(Activator);
+	IActivateable::OnDeactivated(Activator);
 }

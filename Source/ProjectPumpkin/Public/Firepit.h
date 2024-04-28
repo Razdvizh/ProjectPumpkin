@@ -20,9 +20,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void OnVolumeActivated(AActor* Activator) override;
+	virtual void OnActivated(AActor* Activator) override;
 
-	virtual void OnVolumeDeactivated(AActor* Activator) override;
+	virtual void OnDeactivated(AActor* Activator) override;
 
 private:
 	void MarkAsActivateable();

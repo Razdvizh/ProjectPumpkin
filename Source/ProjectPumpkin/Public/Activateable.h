@@ -16,7 +16,7 @@ class UActivateable : public UInterface
 };
 
 /**
- * Represents a "bridge" between ActivationVolumeComponent and its behavior.
+ * Represents a "bridge" between concrete activation source and abstract behavior.
  * Make sure to implement all methods in derived classes, otherwise an assertion will be triggered.
  * Aforementioned methods do not have default implementation, so it is not safe to call them from interface.
  */
@@ -27,9 +27,9 @@ class PROJECTPUMPKIN_API IActivateable
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION()
-	virtual void OnVolumeActivated(AActor* Activator) PURE_VIRTUAL(&IActivateable::OnVolumectivated, );
+	virtual void OnActivated(AActor* Activator) PURE_VIRTUAL(&IActivateable::OnActivated, );
 
 	UFUNCTION()
-	virtual void OnVolumeDeactivated(AActor* Activator) PURE_VIRTUAL(&IActivateable::OnVolumeDeactivated, );
+	virtual void OnDeactivated(AActor* Activator) PURE_VIRTUAL(&IActivateable::OnDeactivated, );
 
 };

@@ -30,10 +30,10 @@ public:
 
 protected:
 	UFUNCTION()
-	virtual void OnVolumeActivated(AActor* Activator) override;
+	virtual void OnActivated(AActor* Activator) override;
 
 	UFUNCTION()
-	virtual void OnVolumeDeactivated(AActor* Activator) override;
+	virtual void OnDeactivated(AActor* Activator) override;
 
 protected:
 	static FName MeshName;

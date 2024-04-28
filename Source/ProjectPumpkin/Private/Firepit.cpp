@@ -30,7 +30,7 @@ void AFirepit::BeginPlay()
 
 }
 
-void AFirepit::OnVolumeActivated(AActor* Activator)
+void AFirepit::OnActivated(AActor* Activator)
 {
 	if (bCanBeActivated)
 	{
@@ -38,7 +38,7 @@ void AFirepit::OnVolumeActivated(AActor* Activator)
 	}
 }
 
-void AFirepit::OnVolumeDeactivated(AActor* Activator)
+void AFirepit::OnDeactivated(AActor* Activator)
 {
 	//No op
 }

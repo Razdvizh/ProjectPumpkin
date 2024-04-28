@@ -21,8 +21,8 @@ void UActivationVolumeComponent::BeginPlay()
 	if (Owner->Implements<UActivateable>())
 	{
 		IActivateable* AsActivateable = Cast<IActivateable>(Owner);
-		OnVolumeActivated.AddUniqueDynamic(AsActivateable, &IActivateable::OnVolumeActivated);
-		OnVolumeDeactivated.AddUniqueDynamic(AsActivateable, &IActivateable::OnVolumeDeactivated);
+		OnActivated.AddUniqueDynamic(AsActivateable, &IActivateable::OnActivated);
+		OnDeactivated.AddUniqueDynamic(AsActivateable, &IActivateable::OnDeactivated);
 	}
 
 	Super::BeginPlay();
@@ -57,14 +57,14 @@ void UActivationVolumeComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedC
 		{
 			if (OtherActor->IsA<const TSubclassOf<AActor>>(ActivatorClass))
 			{
-				OnVolumeActivated.Broadcast(OtherActor);
+				OnActivated.Broadcast(OtherActor);
 				return;
 			}
 		}
 	}
 	else if (ActivatorClasses.Contains(OtherActor->GetClass()))
 	{
-		OnVolumeActivated.Broadcast(OtherActor);
+		OnActivated.Broadcast(OtherActor);
 	}
 }
 
@@ -76,13 +76,13 @@ void UActivationVolumeComponent::OnEndOverlap(UPrimitiveComponent* OverlappedCom
 		{
 			if (OtherActor->IsA<const TSubclassOf<AActor>>(ActivatorClass))
 			{
-				OnVolumeDeactivated.Broadcast(OtherActor);
+				OnDeactivated.Broadcast(OtherActor);
 				return;
 			}
 		}
 	}
 	else if (ActivatorClasses.Contains(OtherActor->GetClass()))
 	{
-		OnVolumeDeactivated.Broadcast(OtherActor);
+		OnDeactivated.Broadcast(OtherActor);
 	}
 }

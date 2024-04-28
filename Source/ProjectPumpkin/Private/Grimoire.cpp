@@ -25,7 +25,7 @@ AGrimoire::AGrimoire()
 	ActivationVolume->PrimaryComponentTick.bCanEverTick = false;
 }
 
-void AGrimoire::OnVolumeActivated(AActor* Activator)
+void AGrimoire::OnActivated(AActor* Activator)
 {
 	if (Activator->Implements<UInteractable>())
 	{
@@ -62,7 +62,7 @@ void AGrimoire::OnVolumeActivated(AActor* Activator)
 	Destroy();
 }
 
-void AGrimoire::OnVolumeDeactivated(AActor* Activator)
+void AGrimoire::OnDeactivated(AActor* Activator)
 {
 	//No op
 }

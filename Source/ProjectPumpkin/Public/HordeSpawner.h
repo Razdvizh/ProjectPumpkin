@@ -35,9 +35,9 @@ public:
 protected:
 	virtual void DoSpawningAsync();
 
-	virtual void OnVolumeActivated(AActor* Activator) override;
+	virtual void OnActivated(AActor* Activator) override;
 
-	virtual void OnVolumeDeactivated(AActor* Activator) override;
+	virtual void OnDeactivated(AActor* Activator) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mass", meta = (ToolTip = "Area that activates the spawner. Check Activators to specify who can trigger spawning."))
 	UActivationVolumeComponent* ActivationVolume;

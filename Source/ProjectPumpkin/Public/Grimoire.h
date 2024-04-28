@@ -24,9 +24,9 @@ public:
 	FOnGrimoirePickedUpEvent OnGrimoirePickedUp;
 
 protected:
-	virtual void OnVolumeActivated(AActor* Activator) final override;
+	virtual void OnActivated(AActor* Activator) final override;
 
-	virtual void OnVolumeDeactivated(AActor* Activator) override;
+	virtual void OnDeactivated(AActor* Activator) override;
 
 protected:
 	UPROPERTY(EditInstanceOnly, Category = "Grimoire")

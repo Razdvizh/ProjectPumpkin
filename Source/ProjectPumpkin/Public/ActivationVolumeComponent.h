@@ -7,8 +7,8 @@
 #include "Templates/SubclassOf.h"
 #include "ActivationVolumeComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam(FOnVolumeActivatedSignature, UActivationVolumeComponent, OnVolumeActivated, AActor*, Activator);
-DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam(FOnVolumeDeactivatedSignature, UActivationVolumeComponent, OnVolumeDeactivated, AActor*, Activator);
+DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam(FOnVolumeActivatedSignature, UActivationVolumeComponent, OnActivated, AActor*, Activator);
+DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam(FOnVolumeDeactivatedSignature, UActivationVolumeComponent, OnDeactivated, AActor*, Activator);
 
 class AActor;
 struct FHitResult;
@@ -27,10 +27,10 @@ public:
 	FORCEINLINE TSet<TSubclassOf<AActor>>& GetActivatorClasses() { return ActivatorClasses; }
 
 	UPROPERTY(BlueprintAssignable, Category = "Activation Volume Component")
-	FOnVolumeActivatedSignature OnVolumeActivated;
+	FOnVolumeActivatedSignature OnActivated;
 
 	UPROPERTY(BlueprintAssignable, Category = "Activation Volume Component")
-	FOnVolumeDeactivatedSignature OnVolumeDeactivated;
+	FOnVolumeDeactivatedSignature OnDeactivated;
 
 protected:
 	// Called when the game starts

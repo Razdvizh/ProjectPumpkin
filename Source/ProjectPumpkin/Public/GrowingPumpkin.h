@@ -75,9 +75,9 @@ protected:
 	UFUNCTION()
 	virtual void OnStageReached(EGrowingStage GrowingStage);
 
-	virtual void OnVolumeActivated(AActor* Activator);
+	virtual void OnActivated(AActor* Activator);
 
-	virtual void OnVolumeDeactivated(AActor* Activator);
+	virtual void OnDeactivated(AActor* Activator);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintSetter = SetGrowingCurve, NoClear, Category = "Growing Pumpkin", meta = (ToolTip = "Growing rate ratio (First key time = 0, Last key time = 1). Must have three keys for small, medium and large stages."))

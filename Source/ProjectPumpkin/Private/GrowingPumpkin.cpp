@@ -217,7 +217,7 @@ void AGrowingPumpkin::OnStageReached(EGrowingStage GrowingStage)
 	GetWorld()->GetTimerManager().SetTimer(StagePauseHandle, PauseBetweenStages, false);
 }
 
-void AGrowingPumpkin::OnVolumeActivated(AActor* Activator)
+void AGrowingPumpkin::OnActivated(AActor* Activator)
 {
 	if (AProjectPumpkinCharacter* Character = Cast<AProjectPumpkinCharacter>(Activator))
 	{
@@ -232,7 +232,7 @@ void AGrowingPumpkin::OnVolumeActivated(AActor* Activator)
 	}
 }
 
-void AGrowingPumpkin::OnVolumeDeactivated(AActor* Activator)
+void AGrowingPumpkin::OnDeactivated(AActor* Activator)
 {
 	//No op
 }
