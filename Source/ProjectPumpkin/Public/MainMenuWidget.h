@@ -26,6 +26,8 @@ class PROJECTPUMPKIN_API UMainMenuWidget : public UFrameWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
+	virtual void NativeDestruct() override;
+
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Menu Widget")

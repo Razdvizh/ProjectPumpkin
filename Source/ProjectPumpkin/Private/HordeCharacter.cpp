@@ -111,6 +111,13 @@ void AHordeCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AHordeCharacter::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	AActor::OnActorHit.RemoveDynamic(this, &AHordeCharacter::OnActorHit);
+}
+
 void AHordeCharacter::OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor->Implements<UInteractable>())

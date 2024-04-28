@@ -23,6 +23,8 @@ protected:
 
 	virtual void NativeConstruct() override;
 
+	virtual void NativeDestruct() override;
+
 	UFUNCTION()
 	virtual void OnReturnToMenuClicked();
 

@@ -23,6 +23,17 @@ void UMainMenuWidget::NativeOnInitialized()
 	CreditsSection->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void UMainMenuWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	StartPlay->OnClicked.RemoveDynamic(this, &UMainMenuWidget::OnStartPlayClicked);
+	HowToPlay->OnClicked.RemoveDynamic(this, &UMainMenuWidget::OnHowToPlayClicked);
+	Credits->OnClicked.RemoveDynamic(this, &UMainMenuWidget::OnCreditsClicked);
+	ExitGame->OnClicked.RemoveDynamic(this, &UMainMenuWidget::OnExitGameClicked);
+	ReturnToMenu->OnClicked.RemoveDynamic(this, &UMainMenuWidget::OnReturnToMenuClicked);
+}
+
 FReply UMainMenuWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	if (InKeyEvent.GetKey().IsDigital() && ReturnToMenu->IsVisible())

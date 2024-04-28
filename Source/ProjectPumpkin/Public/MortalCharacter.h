@@ -34,6 +34,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(EEndPlayReason::Type Reason) override;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
 	UHealthComponent* Health;

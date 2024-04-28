@@ -36,7 +36,20 @@ void UInGameWidget::NativeOnInitialized()
 		{
 			Grimoire = *It;
 			Grimoire->OnGrimoirePickedUp.AddUniqueDynamic(this, &UInGameWidget::UpdateGrimoire);
+			break;
 		}
+	}
+}
+
+void UInGameWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	if (AProjectPumpkinCharacter* Character = AProjectPumpkinGameMode::GetPumpkinCharacter(GetWorld()))
+	{
+		UHealthComponent* Health = Character->GetHealthComponent();
+		Health->OnHealthChanged.RemoveDynamic(this, &UInGameWidget::UpdateHealth);
+		Health->OnLethalHealthReached.RemoveDynamic(this, &UInGameWidget::UpdateLethalHealth);
 	}
 }
 

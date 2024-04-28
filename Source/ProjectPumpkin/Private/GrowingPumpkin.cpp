@@ -205,6 +205,13 @@ void AGrowingPumpkin::BeginPlay()
 	StartGrowth();
 }
 
+void AGrowingPumpkin::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	OnGrowingStageReached.RemoveDynamic(this, &AGrowingPumpkin::OnStageReached);
+}
+
 void AGrowingPumpkin::OnStageReached(EGrowingStage GrowingStage)
 {
 	GetWorld()->GetTimerManager().SetTimer(StagePauseHandle, PauseBetweenStages, false);

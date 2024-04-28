@@ -28,6 +28,14 @@ void UActivationVolumeComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
+void UActivationVolumeComponent::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	OnComponentBeginOverlap.RemoveDynamic(this, &UActivationVolumeComponent::OnBeginOverlap);
+	OnComponentEndOverlap.RemoveDynamic(this, &UActivationVolumeComponent::OnEndOverlap);
+}
+
 void UActivationVolumeComponent::OnRegister()
 {
 	Super::OnRegister();

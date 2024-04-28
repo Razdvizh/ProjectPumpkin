@@ -33,3 +33,10 @@ void AMortalCharacter::BeginPlay()
 
 	Super::BeginPlay();
 }
+
+void AMortalCharacter::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	Health->OnLethalHealthReached.RemoveDynamic(this, &AMortalCharacter::OnDemise);
+}

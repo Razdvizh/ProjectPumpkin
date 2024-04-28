@@ -29,6 +29,14 @@ void UPauseWidget::NativeConstruct()
 	}
 }
 
+void UPauseWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	ReturnToMenu->OnClicked.RemoveDynamic(this, &UPauseWidget::OnReturnToMenuClicked);
+	ToggleMusic->OnCheckStateChanged.RemoveDynamic(this, &UPauseWidget::OnToggleMusic);
+}
+
 void UPauseWidget::OnReturnToMenuClicked()
 {
 	GetOwningPlayer()->ConsoleCommand(TEXT("open Menu"));

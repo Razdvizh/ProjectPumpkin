@@ -70,6 +70,13 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AProjectile::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	AActor::OnActorHit.RemoveDynamic(this, &AProjectile::OnActorHit);
+}
+
 void AProjectile::LifeSpanExpired()
 {
 	AsyncTask(ENamedThreads::GameThread, [this]()

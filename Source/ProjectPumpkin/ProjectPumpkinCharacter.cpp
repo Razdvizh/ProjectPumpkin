@@ -148,6 +148,13 @@ void AProjectPumpkinCharacter::BeginPlay()
 	AActor::OnActorHit.AddUniqueDynamic(this, &AProjectPumpkinCharacter::OnActorHit);
 }
 
+void AProjectPumpkinCharacter::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	AActor::OnActorHit.RemoveDynamic(this, &AProjectPumpkinCharacter::OnActorHit);
+}
+
 void AProjectPumpkinCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);

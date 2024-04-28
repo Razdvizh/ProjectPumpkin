@@ -63,6 +63,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(EEndPlayReason::Type Reason) override;
+
 	virtual void Jump() override;
 
 	UFUNCTION()

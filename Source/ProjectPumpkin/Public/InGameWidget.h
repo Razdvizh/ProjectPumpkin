@@ -25,6 +25,8 @@ public:
 protected:
 	virtual void NativeOnInitialized() override;
 
+	virtual void NativeDestruct() override;
+
 	UFUNCTION()
 	void UpdateHealth(float NewHealth);
 
