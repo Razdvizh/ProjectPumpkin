@@ -16,7 +16,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogProjectPumpkin, Log, All);
 
 #define RETURN_ENSURE_NOT_NEGATIVE_OR_NEGATIVE_ZERO(Val, Message) \
     { \
-        static_assert(std::is_floating_point<decltype(Val)>::value, "Value must be a floating-point type"); \
+        static_assert(std::is_floating_point<decltype(Val)>::value, TEXT("Value must be a floating-point type")); \
         return static_cast<void>(ensureMsgf(!FMath::IsNegativeOrNegativeZero(Val), TEXT("%s"), *Message)); \
     }
 
