@@ -34,6 +34,13 @@ void UActivationVolumeComponent::EndPlay(EEndPlayReason::Type Reason)
 
 	OnComponentBeginOverlap.RemoveDynamic(this, &UActivationVolumeComponent::OnBeginOverlap);
 	OnComponentEndOverlap.RemoveDynamic(this, &UActivationVolumeComponent::OnEndOverlap);
+
+	AActor* Owner = GetOwner();
+	if (Owner->Implements<UActivateable>())
+	{
+		OnActivated.RemoveAll(Owner);
+		OnDeactivated.RemoveAll(Owner);
+	}
 }
 
 void UActivationVolumeComponent::OnRegister()
