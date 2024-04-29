@@ -196,7 +196,7 @@ void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)
 
 	if (!bIsLooking)
 	{
-		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->bOrientRotationToMovement = !bIsLooking;
 	}
 
 	const FRotator Rotation = Controller->GetControlRotation();
@@ -244,12 +244,38 @@ void AProjectPumpkinCharacter::Look()
 
 void AProjectPumpkinCharacter::Shoot()
 {
-	FTransform HandTransform = GetMesh()->GetBoneTransform(TEXT("hand_r"), RTS_World);
-	FTransform SpawnTransform = FTransform(GetActorRotation(), HandTransform.GetLocation(), HandTransform.GetScale3D());
-	
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = this;
+	const auto SpawnProjectile = [this](const FName& SocketName)
+	{
+		const FTransform HandTransform = GetMesh()->GetBoneTransform(SocketName, RTS_World);
+
+		FHitResult Hit;
+		FQuat TargetRotation;
+		APlayerController* PlayerController = StaticCast<APlayerController*, AController*>(Controller);
+		if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Mouse, false, Hit))
+		{
+			const FVector MousePosition = FVector(Hit.ImpactPoint.X, Hit.ImpactPoint.Y, 0.f);
+			TargetRotation = ((HandTransform.GetLocation()) - MousePosition).ToOrientationQuat();
+		}
+		else
+		{
+			TargetRotation = GetActorQuat();
+		}
+		const FRotator NewRotation = FRotator(0.f, (TargetRotation.Rotator() + LookOffset).Yaw, 0.f);
+		const FTransform SpawnTransform = FTransform(NewRotation, HandTransform.GetLocation(), HandTransform.GetScale3D());
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = this;
+		AProjectile* Projectile = Cast<AProjectile>(GetWorld()->SpawnActor(ProjectileClass, &SpawnTransform, SpawnParams));
+		UProjectileMovementComponent* ProjectileMovement = Projectile->GetProjectileMovement();
+		ProjectileMovement->Velocity += GetCharacterMovement()->Velocity;
+	};
+
+	SpawnProjectile(TEXT("hand_r"));
+	if (bSpawnDoubleProjectile)
+	{
+		SpawnProjectile(TEXT("hand_l"));
+	}
 
 	UWorld* World = GetWorld();
 	if (GEngine->UseSound() && World->bAllowAudioPlayback && ProjectileSound)
@@ -259,29 +285,14 @@ void AProjectPumpkinCharacter::Shoot()
 			TArray<FAudioParameter> Params;
 			UActorSoundParameterInterface::Fill(this, Params);
 
-			float VolumeMultiplier = 1.f;
-			float PitchMultiplier = 1.f;
-			float StartTime = 0.01f;
-			FVector SoundLocation = SpawnTransform.GetLocation();
-			FRotator SoundRotation = SpawnTransform.GetRotation().Rotator();
+			const float VolumeMultiplier = 1.f;
+			const float PitchMultiplier = 1.f;
+			const float StartTime = 0.01f;
+			const FVector SoundLocation = GetActorLocation();
+			const FRotator SoundRotation = GetActorRotation();
 			AudioDevice->PlaySoundAtLocation(ProjectileSound, World, VolumeMultiplier, PitchMultiplier, StartTime, 
-				SoundLocation, SoundRotation, nullptr, nullptr, &Params, this);
+				SoundLocation, SoundRotation, /*Attenuation=*/nullptr, /*Concurrency=*/nullptr, &Params, /*Owner=*/this);
 		}
-	}
-
-	const auto ConstructProjectile = [this](const FTransform& Transform, const FActorSpawnParameters& Params)
-	{
-		AProjectile* Projectile = Cast<AProjectile>(GetWorld()->SpawnActor(ProjectileClass, &Transform, Params));
-		UProjectileMovementComponent* ProjectileMovement = Projectile->GetProjectileMovement();
-		ProjectileMovement->Velocity += GetCharacterMovement()->Velocity;
-	};
-
-	ConstructProjectile(SpawnTransform, SpawnParams);
-	if (bSpawnDoubleProjectile)
-	{
-		HandTransform = GetMesh()->GetBoneTransform(TEXT("hand_l"), RTS_World);
-		SpawnTransform = FTransform(GetActorRotation(), HandTransform.GetLocation(), HandTransform.GetScale3D());
-		ConstructProjectile(SpawnTransform, SpawnParams);
 	}
 }
 
