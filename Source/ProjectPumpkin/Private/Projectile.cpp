@@ -20,7 +20,7 @@ AProjectile::AProjectile()
 	Collision->InitSphereRadius(20.5f);
 	Collision->CanCharacterStepUpOn = ECB_No;
 	Collision->SetGenerateOverlapEvents(true);
-	Collision->SetCollisionProfileName("Projectile");
+	Collision->SetCollisionProfileName(TEXT("Projectile"));
 
 	ProjectileFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileSystem"));
 
