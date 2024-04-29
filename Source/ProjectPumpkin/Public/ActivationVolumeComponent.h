@@ -53,4 +53,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Activation Volume Component", meta = (ToolTip = "Regulates the ability of classes that are derived from activator classes to act as activators."))
 	bool bDerivedAreActivators;
 
+private:
+	void ForActivator(AActor* OtherActor, TFunction<void(AActor* Actor)> Action);
+
 };

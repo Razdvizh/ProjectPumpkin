@@ -58,38 +58,37 @@ void UActivationVolumeComponent::OnRegister()
 
 void UActivationVolumeComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bDerivedAreActivators)
+	ForActivator(OtherActor, [this](AActor* Actor)
 	{
-		for (const auto& ActivatorClass : ActivatorClasses)
-		{
-			if (OtherActor->IsA<const TSubclassOf<AActor>>(ActivatorClass))
-			{
-				OnActivated.Broadcast(OtherActor);
-				return;
-			}
-		}
-	}
-	else if (ActivatorClasses.Contains(OtherActor->GetClass()))
-	{
-		OnActivated.Broadcast(OtherActor);
-	}
+		OnActivated.Broadcast(Actor);
+	});
 }
 
 void UActivationVolumeComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	ForActivator(OtherActor, [this](AActor* Actor) 
+	{
+		OnDeactivated.Broadcast(Actor);
+	});
+}
+
+void UActivationVolumeComponent::ForActivator(AActor* OtherActor, TFunction<void(AActor* Actor)> Action)
+{
+	check(OtherActor);
+
 	if (bDerivedAreActivators)
 	{
 		for (const auto& ActivatorClass : ActivatorClasses)
 		{
 			if (OtherActor->IsA<const TSubclassOf<AActor>>(ActivatorClass))
 			{
-				OnDeactivated.Broadcast(OtherActor);
+				Action(OtherActor);
 				return;
 			}
 		}
 	}
 	else if (ActivatorClasses.Contains(OtherActor->GetClass()))
 	{
-		OnDeactivated.Broadcast(OtherActor);
+		Action(OtherActor);
 	}
 }
