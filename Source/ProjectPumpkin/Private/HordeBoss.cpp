@@ -166,6 +166,7 @@ void AHordeBoss::EndPlay(EEndPlayReason::Type Reason)
 	Super::EndPlay(Reason);
 
 	ExpandingSphere->OnComponentBeginOverlap.RemoveDynamic(this, &AHordeBoss::OnExpandingSphereOverlap);
+	GetWorld()->GetTimerManager().ClearTimer(JumpIntervalHandle);
 }
 
 void AHordeBoss::Jump()
