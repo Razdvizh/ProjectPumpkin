@@ -194,10 +194,7 @@ void AProjectPumpkinCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (!bIsLooking)
-	{
-		GetCharacterMovement()->bOrientRotationToMovement = !bIsLooking;
-	}
+	GetCharacterMovement()->bOrientRotationToMovement = !bIsLooking;
 
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
