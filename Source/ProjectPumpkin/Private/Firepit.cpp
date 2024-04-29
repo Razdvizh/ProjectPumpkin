@@ -27,7 +27,6 @@ AFirepit::AFirepit() : bCanBeActivated(false)
 void AFirepit::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void AFirepit::OnActivated(AActor* Activator)

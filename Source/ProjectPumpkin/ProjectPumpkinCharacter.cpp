@@ -119,10 +119,7 @@ void AProjectPumpkinCharacter::SetProjectileClass(TSubclassOf<AProjectile> Class
 
 void AProjectPumpkinCharacter::Interact_Implementation(AActor* Initiator)
 {
-	if (Initiator->IsA<AGrimoire>())
-	{
-		bSpawnDoubleProjectile = true;
-	}
+	bSpawnDoubleProjectile = Initiator->IsA<AGrimoire>();
 
 	const FDamageInfo* DamageInfo = DamageInfoMap.Find(Initiator->GetClass());
 	if (DamageInfo)

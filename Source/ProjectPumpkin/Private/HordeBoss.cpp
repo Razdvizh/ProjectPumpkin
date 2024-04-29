@@ -92,7 +92,7 @@ void AHordeBoss::Interact_Implementation(AActor* Initiator)
 		Super::Interact_Implementation(Initiator);
 		Jump();
 	}
-	if (Initiator->IsA<AProjectile>())
+	else if (Initiator->IsA<AProjectile>())
 	{
 		Super::Interact_Implementation(Initiator);
 	}
